@@ -1,0 +1,1946 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Palmer Entrepreneurs — Planilla</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root{
+    --paper:#F3F5EE;
+    --paper-line:#D8DECC;
+    --ink:#1E2A22;
+    --ink-soft:#5B6A5E;
+    --forest:#2F5233;
+    --forest-dark:#20391F;
+    --gold:#B98B36;
+    --flag:#B4432F;
+    --flag-bg:#FBEAE5;
+    --card:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; padding:0 0 4rem 0;
+    background:var(--paper);
+    background-image: repeating-linear-gradient(var(--paper) 0px, var(--paper) 27px, var(--paper-line) 28px);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+  }
+  .wrap{max-width:1000px; margin:0 auto; padding:2.5rem 1.5rem 0;}
+
+  header{display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; flex-wrap:wrap; margin-bottom:1.75rem; border-bottom:2px solid var(--forest); padding-bottom:1rem;}
+  h1{font-family:'Source Serif 4', serif; font-weight:600; font-size:28px; margin:0; color:var(--forest-dark);}
+  .sub{color:var(--ink-soft); font-size:13px; margin-top:4px;}
+  .status{font-size:12px; color:var(--ink-soft); display:flex; align-items:center; gap:6px;}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--forest); transition:background .3s;}
+  .dot.saving{background:var(--gold);}
+
+  .summary-bar{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; background:var(--forest); border-radius:10px; overflow:hidden; margin-bottom:2rem; box-shadow:0 1px 3px rgba(0,0,0,.08);}
+  .summary-cell{background:var(--card); padding:14px 16px;}
+  .summary-cell .label{font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft);}
+  .summary-cell .value{font-family:'IBM Plex Mono',monospace; font-size:19px; font-weight:500; margin-top:3px; color:var(--forest-dark);}
+
+  .week{background:var(--card); border-radius:10px; margin-bottom:1.4rem; box-shadow:0 1px 3px rgba(0,0,0,.06); overflow:hidden; border:1px solid var(--paper-line);}
+  .week-head{background:var(--forest); color:#fff; padding:10px 16px; display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .week-head input.label{background:transparent; border:none; color:#fff; font-family:'Source Serif 4',serif; font-weight:600; font-size:16px; width:min(360px,60%);}
+  .week-head input.label::placeholder{color:#ffffffaa;}
+  .week-head input.label:focus{outline:1px solid #ffffff88; border-radius:4px;}
+  .week-actions{display:flex; gap:8px; align-items:center;}
+  .period-tag{font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:#fff; background:#ffffff22; border:1px solid #ffffff55; border-radius:10px; padding:3px 9px;}
+  .period-tag.warn{background:var(--flag); border-color:var(--flag); color:#fff;}
+  .period-tag.quincenal{background:var(--gold); border-color:var(--gold); color:#fff;}
+  .timeline-add-buttons{display:flex; gap:10px; margin-top:1rem;}
+  .timeline-add-buttons .add-week-btn{margin-top:0;}
+  .icon-btn{background:transparent; border:1px solid #ffffff55; color:#fff; border-radius:6px; padding:4px 9px; font-size:12px; cursor:pointer; font-family:'Inter',sans-serif;}
+  .icon-btn:hover{background:#ffffff22;}
+
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  thead th{background:#EEF1E6; color:var(--ink-soft); font-weight:500; text-transform:uppercase; letter-spacing:.03em; font-size:10.5px; padding:8px 6px; text-align:center; border-bottom:1px solid var(--paper-line);}
+  thead th.emp{text-align:left; padding-left:14px;}
+  tbody td{padding:6px; text-align:center; border-bottom:1px solid var(--paper-line);}
+  tbody td.emp{text-align:left; padding-left:14px;}
+  tbody tr.flag{background:var(--flag-bg);}
+  input.name{width:100%; border:1px solid transparent; background:transparent; font-weight:500; padding:4px 6px; border-radius:4px; font-family:'Inter',sans-serif;}
+  input.name:hover, input.name:focus{border-color:var(--paper-line); background:#fff;}
+  input.hours{width:46px; text-align:center; border:1px solid var(--paper-line); border-radius:4px; padding:4px 2px; font-family:'IBM Plex Mono',monospace; font-size:12.5px;}
+  input.hours:focus{outline:2px solid var(--forest); border-color:var(--forest);}
+  input.rate{width:70px; text-align:right; border:1px solid var(--paper-line); border-radius:4px; padding:4px 6px; font-family:'IBM Plex Mono',monospace; font-size:12.5px;}
+  .total-horas, .pago{font-family:'IBM Plex Mono',monospace; font-weight:500;}
+  .pago{color:var(--forest-dark);}
+  .pago.empty{color:var(--flag); font-style:italic; font-family:'Inter',sans-serif; font-size:11.5px;}
+  .rm-emp{background:none;border:none;color:#B4432F;cursor:pointer;font-size:15px;padding:2px 6px;}
+  .row-actions{display:flex; gap:4px; align-items:center; justify-content:center;}
+  .extras-toggle{background:none; border:1px solid var(--paper-line); color:var(--ink-soft); cursor:pointer; font-size:13px; width:22px; height:22px; border-radius:5px; line-height:1;}
+  .extras-toggle:hover{border-color:var(--forest); color:var(--forest);}
+  .extras-toggle.has-extras{background:var(--gold); border-color:var(--gold); color:#fff;}
+  tr.extras-row td{background:#FAFBF3; padding:12px 14px; border-bottom:1px solid var(--paper-line);}
+  .extras-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px 16px;}
+  .extra-field label{display:block; font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.03em; margin-bottom:3px;}
+  .extra-field input{width:100%; border:1px solid var(--paper-line); border-radius:5px; padding:5px 7px; font-family:'IBM Plex Mono',monospace; font-size:12.5px;}
+  .extra-field input:focus{outline:2px solid var(--forest); border-color:var(--forest);}
+  .extra-computed{display:flex; flex-wrap:wrap; gap:14px; margin-top:12px; padding-top:12px; border-top:1px dashed var(--paper-line);}
+  .extra-computed > div{display:flex; flex-direction:column; gap:2px; min-width:130px;}
+  .extra-computed span{font-size:10px; text-transform:uppercase; letter-spacing:.03em; color:var(--ink-soft);}
+  .extra-computed b{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--ink);}
+  .extra-computed .ccss-line b{color:var(--flag);}
+  .extra-computed .neto-line b{color:var(--forest-dark); font-size:14.5px;}
+  .extra-field-ccss{justify-content:flex-end;}
+  .ccss-checkbox{display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ink); font-weight:500; text-transform:none; letter-spacing:0; cursor:pointer;}
+  .ccss-checkbox input{width:auto;}
+  .ccss-manual-row{display:flex; align-items:center; gap:6px; margin-top:6px;}
+  .ccss-manual-row input{width:90px; border:1px solid var(--paper-line); border-radius:5px; padding:4px 6px; font-family:'IBM Plex Mono',monospace; font-size:12px;}
+  .ccss-manual-row span{font-size:10px; color:var(--ink-soft);}
+  input.ccss-manual-inline{width:80px; border:1px solid var(--paper-line); border-radius:5px; padding:4px 6px; font-family:'IBM Plex Mono',monospace; font-size:12px;}
+  .rm-emp:hover{color:#7a2b1e;}
+  tfoot td{padding:8px 6px; text-align:center; font-weight:600; background:#EEF1E6; font-family:'IBM Plex Mono',monospace;}
+  tfoot td.lbl{text-align:right; padding-right:12px; font-family:'Inter',sans-serif; color:var(--ink-soft); font-weight:500;}
+
+  tr.group-head td{background:#EFE9D8; padding:6px 14px; border-bottom:1px solid var(--paper-line); border-top:1px solid var(--paper-line);}
+  .group-name{font-weight:600; font-size:12px; color:var(--forest-dark); text-transform:uppercase; letter-spacing:.03em;}
+  .emp-summary h3{font-size:12px; margin:18px 0 6px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em;}
+  tr.total-row td{font-weight:700; background:#EEF1E6; border-top:2px solid var(--forest);}
+  .pendiente{color:var(--flag); font-style:italic; font-family:'Inter',sans-serif; font-size:11.5px;}
+  .confirm-modal{position:fixed; inset:0; background:rgba(30,42,34,.45); display:flex; align-items:center; justify-content:center; z-index:1000;}
+  .confirm-box{background:#fff; border-radius:12px; padding:22px 24px; max-width:380px; width:calc(100% - 40px); box-shadow:0 8px 30px rgba(0,0,0,.25);}
+  .confirm-box p{margin:0 0 18px; font-size:15px; line-height:1.4; color:var(--ink);}
+  .confirm-actions{display:flex; gap:10px; justify-content:flex-end;}
+  .confirm-actions button{border:none; border-radius:7px; padding:8px 16px; font-size:13px; cursor:pointer; font-family:'Inter',sans-serif;}
+  .confirm-no{background:#EEF1E6; color:var(--ink);}
+  .confirm-yes{background:var(--flag); color:#fff;}
+  .toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--forest-dark); color:#fff; padding:10px 18px; border-radius:8px; font-size:13px; z-index:1001; box-shadow:0 4px 14px rgba(0,0,0,.25);}
+  .vac-badge{font-size:10.5px; color:var(--ink-soft); margin-top:2px; padding-left:6px; font-family:'Inter',sans-serif; white-space:nowrap;}
+  .vac-badge b{color:var(--forest-dark);}
+  .vac-badge.neg b{color:var(--flag);}
+  td.neg{color:var(--flag); font-weight:700;}
+  .quincena-emp-foot .vac-badge{margin-right:auto;}
+  .quincena-extras{padding:10px 16px; background:#FAFBF3; border-top:1px solid var(--paper-line); border-bottom:1px solid var(--paper-line); margin-bottom:8px;}
+  .toolbar{position:sticky; top:0; z-index:60; background:var(--paper); border-bottom:1px solid var(--paper-line); margin:0 -1.5rem 1.2rem; padding:10px 1.5rem 8px;}
+  .toolbar-row{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+  .search-wrap{position:relative; flex:1 1 240px; display:flex; align-items:center;}
+  .search-wrap input{width:100%; padding:8px 30px 8px 12px; border:1px solid var(--paper-line); border-radius:8px; font-size:13px; font-family:'Inter',sans-serif; background:#fff;}
+  .search-wrap input:focus{outline:2px solid var(--forest); border-color:var(--forest);}
+  .search-wrap button{position:absolute; right:4px; border:none; background:none; cursor:pointer; color:var(--ink-soft); font-size:14px; padding:4px 8px;}
+  .tb-select,.tb-btn{border:1px solid var(--paper-line); background:#fff; border-radius:8px; padding:7px 10px; font-size:12px; font-family:'Inter',sans-serif; color:var(--ink); cursor:pointer;}
+  .tb-select:hover,.tb-btn:hover{border-color:var(--forest);}
+  .chips{margin-top:8px; overflow-x:auto; flex-wrap:nowrap; padding-bottom:4px;}
+  .chip{flex:0 0 auto; border:1px solid var(--paper-line); background:#fff; border-radius:14px; padding:4px 11px; font-size:12px; cursor:pointer; font-family:'Inter',sans-serif; color:var(--forest-dark);}
+  .chip:hover{background:var(--forest); color:#fff; border-color:var(--forest);}
+  .toolbar-count{font-size:11.5px; color:var(--ink-soft); margin-top:2px;}
+  .toolbar-count:empty{display:none;}
+  .month-block{scroll-margin-top:130px;}
+  .month-head{display:flex; align-items:center; gap:10px; padding:10px 14px; background:var(--forest-dark); color:#fff; border-radius:9px; cursor:pointer; margin:14px 0 10px; user-select:none;}
+  .month-head.collapsed{background:#4A6B50;}
+  .month-head .chev{width:14px;}
+  .month-title{font-family:'Source Serif 4',serif; font-weight:600; font-size:16px;}
+  .month-meta{margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:12px; opacity:.9;}
+  tr.search-hit td{background:#FFF6CC !important;}
+  .quincena-emp.search-hit{background:#FFF6CC;}
+  .empty-state{padding:30px; text-align:center; color:var(--ink-soft);}
+  .emp-summary,.tab-section-head{scroll-margin-top:130px;}
+  .table-scroll{overflow-x:auto;}
+  .reg-cell{font-size:12px; color:var(--ink-soft); white-space:nowrap;}
+  .group-sub{font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--ink-soft); margin-left:10px;}
+  .group-add-btn{float:right; border:none; background:none; color:var(--forest); font-size:11px; cursor:pointer; font-family:'Inter',sans-serif; text-decoration:underline;}
+  input.negocio{width:100%; min-width:110px; border:1px solid var(--paper-line); border-radius:4px; padding:4px 6px; font-family:'Inter',sans-serif; font-size:12px; background:#fff;}
+  input.negocio:focus{outline:2px solid var(--forest); border-color:var(--forest);}
+  td.negocio-cell{min-width:120px;}
+
+  .week-foot{display:flex; justify-content:space-between; align-items:center; padding:9px 16px; background:#FAFBF7;}
+  .add-emp-btn{border:1px dashed var(--forest); background:none; color:var(--forest); padding:5px 12px; border-radius:6px; font-size:12px; cursor:pointer; font-family:'Inter',sans-serif;}
+  .add-emp-btn:hover{background:#2f523311;}
+  .note{font-size:11px; color:var(--flag);}
+
+  .add-week-btn{display:block; width:100%; padding:16px; border:2px dashed var(--forest); border-radius:10px; background:none; color:var(--forest); font-size:14px; font-weight:500; cursor:pointer; font-family:'Inter',sans-serif; margin-top:1rem;}
+  .add-week-btn:hover{background:#2f523311;}
+
+  .tab-section-head{margin-top:2.5rem; border-bottom:2px solid var(--forest); padding-bottom:8px; margin-bottom:1.2rem;}
+  .tab-section-head h2{font-family:'Source Serif 4',serif; font-size:18px; color:var(--forest-dark); margin:0;}
+  .tab-section-head .sub{font-size:12px; color:var(--ink-soft); margin-top:2px;}
+
+  .quincena-emp{border-top:1px solid var(--paper-line); padding-top:10px; margin-top:10px;}
+  .quincena-emp:first-child{border-top:none; margin-top:0; padding-top:0;}
+  .quincena-emp-head{display:flex; gap:10px; align-items:center; flex-wrap:wrap; padding:0 16px 8px;}
+  .quincena-emp-head input.name{flex:1 1 220px; font-weight:600; border:1px solid var(--paper-line); border-radius:4px; padding:5px 8px;}
+  .quincena-emp-head input.negocio{flex:1 1 160px;}
+  .quincena-emp-head input.rate{width:90px; text-align:right; border:1px solid var(--paper-line); border-radius:4px; padding:5px 8px; font-family:'IBM Plex Mono',monospace;}
+  .dias-table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  .dias-table td{padding:4px 6px; border-bottom:1px solid var(--paper-line);}
+  .dias-table input.dia-label{width:100%; border:1px solid transparent; background:transparent; padding:3px 4px; font-family:'Inter',sans-serif;}
+  .dias-table input.dia-label:hover, .dias-table input.dia-label:focus{border-color:var(--paper-line); background:#fff;}
+  .dias-table input.dia-horas{width:50px; text-align:center; border:1px solid var(--paper-line); border-radius:4px; padding:3px 2px; font-family:'IBM Plex Mono',monospace;}
+  .quincena-emp-foot{display:flex; justify-content:flex-end; gap:16px; padding:8px 16px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--ink-soft); font-weight:500;}
+  .quincena-emp-foot .neto-span{color:var(--forest-dark); font-weight:700; font-size:13.5px;}
+  .quincena-emp-foot .ccss-neg{color:var(--flag);}
+  .quincena-days-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:0 14px; padding:0 16px;}
+
+  .emp-summary{margin-top:2.5rem;}
+  .emp-summary h2{font-family:'Source Serif 4',serif; font-size:18px; color:var(--forest-dark); border-bottom:2px solid var(--forest); padding-bottom:8px; margin-bottom:0;}
+  .emp-summary table{margin-top:0;}
+  .emp-summary thead th{background:transparent;}
+
+  @media (max-width:640px){
+    .week-head input.label{width:55%; font-size:14px;}
+    table{font-size:11.5px;}
+    input.hours{width:34px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Palmer Entrepreneurs</h1>
+      <div class="sub">Planilla — horas y pago por colaboradora, todos los negocios</div>
+    </div>
+    <div class="status"><span class="dot" id="saveDot"></span><span id="saveText">Guardado</span></div>
+  </header>
+
+  <div class="toolbar" id="toolbar">
+    <div class="toolbar-row">
+      <div class="search-wrap">
+        <input type="search" id="searchInput" placeholder="Buscar: nombre, negocio, mes…  (atajo: /)" autocomplete="off">
+        <button type="button" id="searchClear" title="Limpiar búsqueda" hidden>✕</button>
+      </div>
+      <select id="jumpSelect" class="tb-select" title="Ir a una sección">
+        <option value="">Ir a…</option>
+        <option value="latest">Semana más reciente</option>
+        <option value="timeline">Línea de tiempo (inicio)</option>
+        <option value="directorio">Directorio de colaboradoras</option>
+        <option value="negocio">Resumen por negocio</option>
+        <option value="colab">Resumen por colaboradora</option>
+        <option value="pagos">Pagos por colaboradora</option>
+        <option value="vac">Vacaciones y Aguinaldo</option>
+      </select>
+      <button type="button" class="tb-btn" id="collapseAllBtn">Colapsar meses</button>
+      <button type="button" class="tb-btn" id="expandAllBtn">Expandir meses</button>
+    </div>
+    <div class="toolbar-row chips" id="monthChips"></div>
+    <div class="toolbar-count" id="searchCount"></div>
+  </div>
+
+  <datalist id="negocios-list">
+    <!-- se completa por JS -->
+  </datalist>
+
+  <div class="summary-bar" id="summaryBar"></div>
+
+  <div class="emp-summary" id="directorioSection">
+    <h2>Directorio de colaboradoras</h2>
+    <div class="sub">Pasá a "Ya no trabaja" a quien se fue y anotá su fecha de salida. "Primer / último registro" salen de las semanas cargadas.</div>
+    <h3>Activas <span id="dirCountActivas"></span></h3>
+    <div class="table-scroll"><table>
+      <thead><tr><th class="emp">Nombre</th><th>Identificación</th><th>Tipo de nómina</th><th>Ingreso</th><th>Salida</th><th>Primer registro</th><th>Último registro</th><th title="Días a favor (+) o ya tomados antes de este registro (−)">Ajuste vac. (días)</th><th>Estado</th><th></th></tr></thead>
+      <tbody id="directorioBody"></tbody>
+    </table></div>
+    <h3>Ya no trabajan con nosotros <span id="dirCountInactivas"></span></h3>
+    <div class="table-scroll"><table>
+      <thead><tr><th class="emp">Nombre</th><th>Identificación</th><th>Tipo de nómina</th><th>Ingreso</th><th>Salida</th><th>Primer registro</th><th>Último registro</th><th title="Días a favor (+) o ya tomados antes de este registro (−)">Ajuste vac. (días)</th><th>Estado</th><th></th></tr></thead>
+      <tbody id="directorioInactivasBody"></tbody>
+    </table></div>
+    <button class="add-emp-btn" id="addDirectorioBtn" style="margin-top:10px;">+ Agregar a directorio</button>
+    <button class="add-emp-btn" id="mergeDirectorioBtn" style="margin-top:10px;">Fusionar duplicados por nombre</button>
+    <button class="add-emp-btn" id="importDirectorioBtn" style="margin-top:10px;">Agregar las que faltan (de los registros)</button>
+  </div>
+
+  <div class="tab-section-head" id="timelineHead">
+    <h2>Línea de tiempo de pagos</h2>
+    <div class="sub">Semanas y quincenas intercaladas en orden cronológico (el ciclo va de setiembre a agosto).</div>
+  </div>
+  <div id="timelineContainer"></div>
+  <div class="timeline-add-buttons">
+    <button class="add-week-btn" id="addWeekBtn">+ Agregar semana en blanco</button>
+    <button class="add-week-btn" id="addQuincenaBtn">+ Agregar quincena en blanco</button>
+  </div>
+
+  <div class="emp-summary" id="resumenNegocio">
+    <h2>Resumen por negocio</h2>
+    <table>
+      <thead><tr><th class="emp">Negocio</th><th>Colaboradoras</th><th>Total horas</th><th>Total pagado</th></tr></thead>
+      <tbody id="negocioSummaryBody"></tbody>
+    </table>
+  </div>
+
+  <div class="emp-summary" id="resumenColab">
+    <h2>Resumen por colaboradora</h2>
+    <table>
+      <thead><tr><th class="emp">Nombre</th><th>Semanas</th><th>Total horas</th><th>Total pagado</th></tr></thead>
+      <tbody id="empSummaryBody"></tbody>
+    </table>
+  </div>
+
+  <div class="emp-summary" id="pagosColab">
+    <h2>Pagos por colaboradora (semana y mes)</h2>
+    <div class="sub">Elegí una colaboradora para ver todo lo que se le ha pagado. Las semanas que cruzan de un mes a otro se cuentan en el mes en que empiezan.</div>
+    <select id="colabSelect" class="negocio" style="margin:10px 0; min-width:280px;"></select>
+    <h3>Por semana</h3>
+    <table>
+      <thead><tr><th class="emp">Periodo</th><th>Negocio</th><th>Horas</th><th>Bruto</th><th>CCSS</th><th>Neto</th></tr></thead>
+      <tbody id="colabSemanaBody"></tbody>
+    </table>
+    <h3>Por mes</h3>
+    <table>
+      <thead><tr><th class="emp">Mes</th><th>Periodos</th><th>Horas</th><th>Bruto</th><th>CCSS</th><th>Neto</th></tr></thead>
+      <tbody id="colabMesBody"></tbody>
+    </table>
+  </div>
+
+  <div class="emp-summary" id="vacAguinaldo">
+    <h2>Vacaciones y Aguinaldo</h2>
+    <div class="sub" id="aguinaldoPeriodo"></div>
+    <table>
+      <thead><tr>
+        <th class="emp">Nombre</th><th>Meses trabajados</th><th>Días ganados</th><th>Días tomados</th>
+        <th>Días disponibles</th><th>Valor disponible</th><th>Bruto acumulado</th><th>Aguinaldo estimado</th>
+      </tr></thead>
+      <tbody id="aguinaldoBody"></tbody>
+    </table>
+    <h3>Ya no trabajan con nosotros</h3>
+    <table>
+      <thead><tr>
+        <th class="emp">Nombre</th><th>Meses trabajados</th><th>Días ganados</th><th>Días tomados</th>
+        <th>Días disponibles</th><th>Valor disponible</th><th>Bruto acumulado</th><th>Aguinaldo estimado</th>
+      </tr></thead>
+      <tbody id="aguinaldoInactivasBody"></tbody>
+    </table>
+    <h3>Registro de vacaciones e incapacidades</h3>
+    <table>
+      <thead><tr><th class="emp">Colaboradora</th><th>Periodo</th><th>Negocio</th><th>Vacaciones (días)</th><th>Días sin goce</th><th>Incapacidad CCSS (días)</th></tr></thead>
+      <tbody id="vacRegistroBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const DAY_LABELS = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const STORAGE_KEY = 'planilla-luna-africana-semanas';
+const NEGOCIOS = ['Luna Africana', 'Cosechas', 'Cosechas Lagunilla', 'Cosechas Puerto Viejo'];
+const SIN_NEGOCIO = 'Sin negocio asignado';
+const DIRECTORIO_KEY = 'planilla-luna-africana-directorio';
+const DIRECTORIO_DELETED_KEY = 'planilla-luna-africana-directorio-eliminados';
+// Semanas/quincenas de la carga original que se borraron a propósito (por sourceId),
+// para que no se vuelvan a agregar solas al abrir la herramienta.
+const DELETED_SRC_KEY = 'planilla-luna-africana-eliminados-fuente';
+let eliminadosFuente = [];
+async function loadEliminadosFuente(){
+  try{
+    const res = await window.storage.get(DELETED_SRC_KEY, false);
+    if(res && res.value) return JSON.parse(res.value);
+  }catch(err){ /* nada borrado todavía */ }
+  return [];
+}
+let directorioEliminados = [];
+const DIRECTORIO_SEED = [{"nombre":"Deykel Michelle Palmer Chaves","identificacion":"1-1896-0150","tipoNomina":"Quincenal"},{"nombre":"Sharym Corbett Picado","identificacion":"2-0823-0144","tipoNomina":"Semanal"},{"nombre":"Martha Lorena Vanegas Vanegas","identificacion":"8-01060934","tipoNomina":"Semanal"},{"nombre":"Joselys Pérez Quintero","identificacion":"7-0282-0420","tipoNomina":"Semanal"},{"nombre":"Vicky Leticia Ulate Morales","identificacion":"7-02740407","tipoNomina":"Semanal"},{"nombre":"Nefthaly Denaiya Clark Weir","identificacion":"7-02770509","tipoNomina":"Semanal"},{"nombre":"Ángela del Socorro Rodríguez Roblero","identificacion":"15583599940","tipoNomina":"Semanal"},{"nombre":"Sharon Tais Palmer Chaves","identificacion":"","tipoNomina":"Semanal"}];
+let directorio = null;
+const QUINCENAS_KEY = 'planilla-luna-africana-quincenas';
+const QUINCENA_SEED = [
+  {
+    sourceId: 'q-1',
+    label: 'Semana 16 Ago 2026 - 30 Ago 2026',
+    empleados: [{
+      name: 'Deykel Michelle Palmer Chaves',
+      negocio: 'Luna Africana',
+      rate: 2734.375,
+      dias: [
+        {label:'Domingo 16', horas:8},
+        {label:'Lunes 17', horas:4},
+        {label:'Martes 18', horas:0},
+        {label:'Miércoles 19', horas:0},
+        {label:'Jueves 20', horas:8},
+        {label:'Viernes 21', horas:8},
+        {label:'Sábado 22', horas:6},
+        {label:'Domingo 23', horas:6},
+        {label:'Lunes 24', horas:0},
+        {label:'Martes 25', horas:0},
+        {label:'Miércoles 26', horas:6},
+        {label:'Jueves 27', horas:8},
+        {label:'Viernes 28', horas:8},
+        {label:'Sábado 29', horas:8},
+        {label:'Domingo 30', horas:8},
+      ],
+    }],
+  },
+];
+let quincenas = null;
+const SEED = [{"sourceId":"A-r3","label":"Semana 2 Dic 2025 - 8 Dic 2025","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2500,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Anny","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Madeline","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Magaly","rate":0,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"}]},{"sourceId":"A-r14","label":"Semana 9 Dic 2025 - 15 Dic 2025","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2500,"hours":[6,0,0,0,0,6,5],"negocio":"Luna Africana"},{"name":"Anny","rate":1800,"hours":[6,0,0,6,0,0,5],"negocio":"Luna Africana"},{"name":"Madeline","rate":1800,"hours":[6,6,0,0,0,0,5],"negocio":"Luna Africana"},{"name":"Magaly","rate":0,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"}]},{"sourceId":"A-r25","label":"Semana 16 Dic 2025 - 22 Dic 2025","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2500,"hours":[0,0,6,0,6,6,6],"negocio":"Luna Africana"},{"name":"Anny","rate":1800,"hours":[8,6,0,8,0,0,0],"negocio":"Luna Africana"},{"name":"Madeline","rate":1800,"hours":[9,5,0,8,0,0,0],"negocio":"Luna Africana"},{"name":"Magaly","rate":0,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"}]},{"sourceId":"A-r36","label":"Semana 23 Dic 2025 - 29 Dic 2025","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2500,"hours":[6,0,12,0,0,6,6],"negocio":"Luna Africana"},{"name":"Anny","rate":1800,"hours":[0,0,0,6,6,0,6],"negocio":"Luna Africana"},{"name":"Madeline","rate":1800,"hours":[0,6,0,6,6,0,6],"negocio":"Luna Africana"},{"name":"Magaly","rate":0,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"}]},{"sourceId":"A-r48","label":"Semana 30 Dic 2025 - 5 Enero 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,0,12,5.5,6,6,6],"negocio":"Luna Africana"},{"name":"Anny","rate":1800,"hours":[6,0,12,6,6,6,6],"negocio":"Luna Africana"},{"name":"Madeline","rate":1800,"hours":[0,6,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Alexa","rate":1800,"hours":[0,0,0,6,6,6,0],"negocio":"Luna Africana"}]},{"sourceId":"A-r60","label":"Semana 5 Ene 2026 - 12 Enero 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,7,6,0,0,6,6],"negocio":"Luna Africana"},{"name":"Anny","rate":1800,"hours":[4,0,0,6,7,0,6],"negocio":"Luna Africana"},{"name":"Madeline","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Alexa","rate":1800,"hours":[0,7,0,0,7,0,6],"negocio":"Luna Africana"}]},{"sourceId":"A-r72","label":"Semana 12 Ene 2026 - 19 Enero 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[7,0,6,0,6,0,6],"negocio":"Luna Africana"},{"name":"Anny","rate":1800,"hours":[0,5,0,7,0,4,6],"negocio":"Luna Africana"},{"name":"Madeline","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Alexa","rate":1800,"hours":[0,5,0,7,0,4,6],"negocio":"Luna Africana"}]},{"sourceId":"A-r84","label":"Semana 19 Ene 2026 - 26 Enero 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,6,6,0,6,0,6],"negocio":"Luna Africana"},{"name":"Anny","rate":1800,"hours":[6,0,0,6,0,7,5],"negocio":"Luna Africana"},{"name":"Madeline","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Alexa","rate":1800,"hours":[6,0,6,0,6,0,6],"negocio":"Luna Africana"}]},{"sourceId":"A-r96","label":"Semana 26 Ene 2026 - 3 Febrero 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[7,6,5,0,6,3,6],"negocio":"Luna Africana"},{"name":"Anny","rate":1800,"hours":[0,0,6,6,0,6,6],"negocio":"Luna Africana"},{"name":"Madeline","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Alexa","rate":1800,"hours":[7,6,0,7,6,0,6],"negocio":"Luna Africana"}]},{"sourceId":"A-r108","label":"Semana 3 Feb 2026 - 10 Febrero 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,3,6,0,6,0,6],"negocio":"Luna Africana"},{"name":"Anny","rate":1800,"hours":[5,5,0,0,0,6,6],"negocio":"Luna Africana"},{"name":"Madeline","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Alexa","rate":1800,"hours":[0,0,0,6,6,0,6],"negocio":"Luna Africana"}]},{"sourceId":"A-r120","label":"Semana 10 Feb 2026 - 16 Febrero 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,3,6,0,6,0,6],"negocio":"Luna Africana"},{"name":"Anny","rate":1800,"hours":[5,5,0,0,0,6,6],"negocio":"Luna Africana"},{"name":"Madeline","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Alexa","rate":1800,"hours":[0,0,0,6,6,0,6],"negocio":"Luna Africana"}]},{"sourceId":"A-r132","label":"Semana 17 Feb 2026 - 23 Febrero 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,3,6,0,6,0,6],"negocio":"Luna Africana"},{"name":"Anny","rate":1800,"hours":[5,5,0,0,0,6,6],"negocio":"Luna Africana"},{"name":"Madeline","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Alexa","rate":1800,"hours":[0,0,0,6,6,0,6],"negocio":"Luna Africana"}]},{"sourceId":"B-r228","label":"Semana 1 Diciembre 2025 - 8 Diciembre 2025","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[14,6.5,6,0,0,0,6],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[6.5,7,0,0,0,4.5,0],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[16,6,0,0,0,6.5,6.5],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":1800,"hours":[14,0,6,0,6,0,6.5],"negocio":"Luna Africana"},{"name":"Maureen","rate":1800,"hours":[6,0,6,0,0,0,0],"negocio":"Luna Africana"}]},{"sourceId":"B-r240","label":"Semana 8 Diciembre 2025 - 15 Diciembre 2025","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,0,0,0,6,0,6],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,6,0,0,0,6,6],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[5,0,0,4.5,0,0,6],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":1800,"hours":[0,0,6,0,6,0,6],"negocio":"Luna Africana"},{"name":"Maureen","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"}]},{"sourceId":"B-r253","label":"Semana 15 Diciembre 2025 - 22 Diciembre 2025","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,0,6,0,6,0,7],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,5,0,4,0,6,6],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[8,0,0,4,0,5,7],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":1800,"hours":[6,0,6,0,6.5,0,7],"negocio":"Luna Africana"},{"name":"Beatriz","rate":1800,"hours":[0,0,0,0,0,0,7],"negocio":"Luna Africana"}]},{"sourceId":"B-r265","label":"Semana 23 Diciembre 2025 - 28 Diciembre 2025","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,0,6,0,6,0,6],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,5,0,4,0,6,6],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[0,0,6,4.5,0,4,5],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":1800,"hours":[6,0,6.5,0,6,6,6],"negocio":"Luna Africana"},{"name":"Beatriz","rate":1800,"hours":[6,0,6,0,0,6,6],"negocio":"Luna Africana"}]},{"sourceId":"B-r277","label":"Semana 29 Diciembre 2025 - 4 Enero 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6.5,6,4,0,6,0,6.5],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[6,4,0,12,6,6,7.5],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[0,7.5,6.5,0,0,3,0],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[4.5,6,7,6,6,6,6],"negocio":"Luna Africana"},{"name":"Beatriz","rate":1800,"hours":[6,0,0,12,6,6,7],"negocio":"Luna Africana"}]},{"sourceId":"B-r289","label":"Semana 5 Enero 2026 - 12 Enero 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,0,5,0,0,7.5,6],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[8.5,0,4,5.5,0,6.5,3.5],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[4.5,0,7,0,6,0,6],"negocio":"Luna Africana"},{"name":"Beatriz","rate":1800,"hours":[6.5,0,0,6,0,0,6],"negocio":"Luna Africana"}]},{"sourceId":"B-r301","label":"Semana 12 Enero 2026 - 19 Enero 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,0,0,0,0,0,6],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,5,0,0,7.5,6,6],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[4,0,6,7,0,5,6.5],"negocio":"Luna Africana"},{"name":"Beatriz","rate":1800,"hours":[0,0,6,4,0,5,6],"negocio":"Luna Africana"}]},{"sourceId":"B-r313","label":"Semana 19 Enero 2026 - 26 Enero 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,0,6.5,0,6.5,6,7],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[4,4,0,8.5,6,6,7],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[0,0,0,0,0,0,4],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[6,0,7,0,6,0,0],"negocio":"Luna Africana"},{"name":"Beatriz","rate":1800,"hours":[6,5,6.5,6,6,4,7],"negocio":"Luna Africana"}]},{"sourceId":"B-r325","label":"Semana 27 Enero 2026 - 1 Febrero 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,0,0,0,6,0,6],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,6,0,3,4.5,3.5,5],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[6,3,5,3,4.5,3.5,5],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[7.5,0,3,0,6,3.5,6],"negocio":"Luna Africana"},{"name":"Beatriz","rate":1800,"hours":[6,0,0,6,6,0,6],"negocio":"Luna Africana"}]},{"sourceId":"B-r337","label":"Semana 2 Febrero 2026 - 8 Febrero 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,0,0,0,0,0,6],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[6,6,0,0,2.5,0,6],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[4,0,3,0,4.5,0,0],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[7.5,0,3,0,6,3.5,6],"negocio":"Luna Africana"},{"name":"Beatriz","rate":1800,"hours":[6,0,0,6,6,0,6],"negocio":"Luna Africana"}]},{"sourceId":"B-r349","label":"Semana 9 Febrero 2026 - 15 Febrero 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[0,0,6,0,6,0,6],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,0,7.5,0,6,0,6.5],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[3,3,0,6.5,0,4.5,5],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[5.5,0,5,0,0,0,6],"negocio":"Luna Africana"},{"name":"Beatriz","rate":1800,"hours":[0,6,0,0,0,5.5,0],"negocio":"Luna Africana"}]},{"sourceId":"B-r361","label":"Semana 15 Febrero 2026 - 22 Febrero 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[7,0,6,0,6,0,5.5],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[7,0,0,5,0,5,5.5],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[3,3,5.5,4,4,0,5.5],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[7,0,5.5,0,6,0,5.5],"negocio":"Luna Africana"},{"name":"Beatriz","rate":1800,"hours":[0,0,0,0,0,5.5,5.5],"negocio":"Luna Africana"}]},{"sourceId":"B-r373","label":"Semana 23 Febrero 2026 - 1 Marzo 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[7,0,6,0,7,0,6],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,6,0,0,7,0,6],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[5,0,0,3,0,3,4],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[6,0,0,0,7,0,6.5],"negocio":"Luna Africana"},{"name":"Beatriz","rate":1800,"hours":[6.5,0,6.5,0,0,4.5,6],"negocio":"Luna Africana"}]},{"sourceId":"B-r385","label":"Semana 2 Marzo 2026 - 9 Marzo 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[3,0,0,0,0,0,6],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[5,0,5,5,0,5,2.5],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Beatriz","rate":1800,"hours":[0,6,0,0,0,6,0],"negocio":"Luna Africana"}]},{"sourceId":"B-r397","label":"Semana 3 Marzo 2026 - 15 Marzo 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,0,6,0,0,0,6],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,0,0,0,0,4.5,6.5],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[5,4,3,0,0,0,6],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[6.5,0,0,0,6.5,0,6],"negocio":"Luna Africana"},{"name":"Beatriz","rate":1800,"hours":[6,0,0,6,6,0,6],"negocio":"Luna Africana"}]},{"sourceId":"B-r409","label":"Semana 15 Marzo 2026 - 22 Marzo 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,0,6.5,0,0,0,7],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,0,0,0,0,4.5,6.5],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[4,2.5,5.5,0,0,0,0],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[6,0,0,0,6,0,7],"negocio":"Luna Africana"},{"name":"Beatriz","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Deykel Michelle Palmer Chaves","rate":2982.9545454545455,"hours":[8,4,0,8,8,8,8],"negocio":"Luna Africana"}]},{"sourceId":"B-r421","label":"Semana 22 Marzo 2026 - 29 Marzo 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,0,7,0,6,0,5.5],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[6,3,0,0,0,6,0],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[0,0,0,7,5,6.5,5],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[6.5,4,0,0,0,4,5.5],"negocio":"Luna Africana"},{"name":"Beatriz","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Deykel Michelle Palmer Chaves","rate":2982.9545454545455,"hours":[4,0,8,8,8,8,8],"negocio":"Luna Africana"}]},{"sourceId":"B-r433","label":"Semana 30 Marzo 2026 - 1 Abril 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[4,6,6,0,0,6.5,7],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,6,6,13,0,8,7],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[0,6,5,12,12,0,7.5],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Katherine","rate":1800,"hours":[0,6,6,20,0,5.5,6],"negocio":"Luna Africana"},{"name":"Deykel Michelle Palmer Chaves","rate":2982.9545454545455,"hours":[4,0,8,8,8,8,8],"negocio":"Luna Africana"}]},{"sourceId":"B-r445","label":"Semana 4 Abril 2026 - 12 Abril 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6.5,0,0,0,0,0,5.5],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[6,5.5,0,8.5,0,0,5.5],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[3.5,4,0,3,4,0,5],"negocio":"Luna Africana"},{"name":"Karen","rate":1800,"hours":[0,0,0,0,0,0,5.5],"negocio":"Luna Africana"},{"name":"Katherine","rate":1800,"hours":[0,0,0,0,0,12,0],"negocio":"Luna Africana"},{"name":"Deykel Michelle Palmer Chaves","rate":2982.9545454545455,"hours":[4,0,8,8,8,8,8],"negocio":"Luna Africana"}]},{"sourceId":"B-r457","label":"Semana 13 Abril 2026 - 21 Abril 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[4,0,0,0,0,0,7],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,0,6,0,5,0,7],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[5,3,0,2,5,0,3.5],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Katherine","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Deykel Michelle Palmer Chaves","rate":2982.9545454545455,"hours":[4,0,8,8,8,8,8],"negocio":"Luna Africana"}]},{"sourceId":"B-r469","label":"Semana 22 Abril 2026 - 27 Abril 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[0,6.5,0,0,6,0,0],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,6.5,0,0,0,0,6],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[3,0,6,4,0,0,4],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Katherine","rate":0,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Deykel Michelle Palmer Chaves","rate":2982.9545454545455,"hours":[4,0,8,8,8,8,8],"negocio":"Luna Africana"}]},{"sourceId":"B-r481","label":"Semana 27 Abril 2026 - 3 Mayo 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[5,0,0,0,6,0,7],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[6,4,0,0,6,0,7],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[0,4,0,5,0,5,8],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Katherine","rate":0,"hours":[0,0,0,0,0,7,7],"negocio":"Luna Africana"},{"name":"Deykel Michelle Palmer Chaves","rate":2982.9545454545455,"hours":[4,0,8,8,8,8,8],"negocio":"Luna Africana"}]},{"sourceId":"B-r493","label":"Semana 27 Abril 2026 - 3 Mayo 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6.5,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[6.5,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Katherine","rate":0,"hours":[6.5,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Deykel Michelle Palmer Chaves","rate":2982.9545454545455,"hours":[4,0,8,8,8,8,8],"negocio":"Luna Africana"}]},{"sourceId":"B-r505","label":"Semana 4 Mayo 2026 - 11 Mayo 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Katherine","rate":0,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Deykel Michelle Palmer Chaves","rate":2982.9545454545455,"hours":[4,0,8,8,8,8,8],"negocio":"Luna Africana"}]},{"sourceId":"B-r517","label":"Semana 11 Mayo 2026 - 18 Mayo 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Katherine","rate":0,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Deykel Michelle Palmer Chaves","rate":2982.9545454545455,"hours":[4,0,8,8,8,8,8],"negocio":"Luna Africana"}]},{"sourceId":"B-r529","label":"Semana 18 Mayo 2026 - 25 Mayo 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,6,0,0,6,6,7.5],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Katherine","rate":0,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Deykel Michelle Palmer Chaves","rate":2982.9545454545455,"hours":[4,0,8,8,8,8,8],"negocio":"Luna Africana"}]},{"sourceId":"B-r541","label":"Semana 18 Mayo 2026 - 25 Mayo 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6,0,4.5,0,0,0,6],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[0,0,3,5,3,0,2.5],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Katherine","rate":0,"hours":[0,7,0,6,0,3,0],"negocio":"Luna Africana"},{"name":"Deykel Michelle Palmer Chaves","rate":2982.9545454545455,"hours":[4,0,8,8,8,8,8],"negocio":"Luna Africana"}]},{"sourceId":"B-r553","label":"Semana 30 Mayo 2026 - 7 Junio 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[0,0,0,0,0,0,6.5],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,0,0,0,0,6,6.5],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[0,0,2,0,0,3.5,6.5],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Katherine","rate":1800,"hours":[0,6,0,0,0,2,6.5],"negocio":"Luna Africana"},{"name":"Deykel Michelle Palmer Chaves","rate":2982.9545454545455,"hours":[4,0,8,8,8,8,8],"negocio":"Luna Africana"}]},{"sourceId":"B-r565","label":"Semana 8 Junio 2026 - 15 Junio 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[7,5.5,5,0,2.5,0,6],"negocio":"Luna Africana"},{"name":"Anny","rate":2000,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[6,0,4.5,0,0,0,0],"negocio":"Luna Africana"},{"name":"Jaqueline","rate":2000,"hours":[0,0,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Katherine","rate":1800,"hours":[0,0,5,5.5,0,5,6],"negocio":"Luna Africana"},{"name":"Deykel Michelle Palmer Chaves","rate":2982.9545454545455,"hours":[4,0,8,8,8,8,8],"negocio":"Luna Africana"}]},{"sourceId":"B-r577","label":"Semana 16 Junio 2026 - 21 Junio 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[0,6,0,7.5,0,7,6.5],"negocio":"Luna Africana"},{"name":"Joselys Pérez Quintero","rate":2000,"hours":[0,0,0,7.5,0,0,7],"negocio":"Cosechas Puerto Viejo"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[6,0,0,0,5,0,0],"negocio":"Luna Africana"},{"name":"Vicky Leticia Ulate Morales","rate":2000,"hours":[0,0,0,0,0,7,7],"negocio":"Cosechas Puerto Viejo"},{"name":"Katherine","rate":1800,"hours":[6,6,0,0,4,0,0],"negocio":"Luna Africana"},{"name":"Deykel Michelle Palmer Chaves","rate":2982.9545454545455,"hours":[4,0,8,8,8,8,8],"negocio":"Luna Africana"}]},{"sourceId":"B-r590","label":"Semana 22 Junio 2026 - 29 Junio 2026","employees":[{"name":"Martha Lorena Vanegas Vanegas","rate":2650,"hours":[6.5,0,6,0,5,0,5.5],"negocio":"Luna Africana"},{"name":"Joselys Pérez Quintero","rate":2000,"hours":[0,0,0,6,0,0,0],"negocio":"Cosechas Puerto Viejo"},{"name":"Ángela del Socorro Rodríguez Roblero","rate":1800,"hours":[5,4,6,0,0,3,0],"negocio":"Luna Africana"},{"name":"Vicky Leticia Ulate Morales","rate":2000,"hours":[0,0,6,0,0,0,5.5],"negocio":"Cosechas Puerto Viejo"},{"name":"Katherine","rate":1800,"hours":[6.5,4,0,0,0,0,0],"negocio":"Luna Africana"},{"name":"Deykel Michelle Palmer Chaves","rate":2982.9545454545455,"hours":[4,0,8,8,8,8,8],"negocio":"Luna Africana"}]},{"sourceId":"gap-1","label":"Semana 30 Jun 2026 - 6 Jul 2026","employees":[]},{"sourceId":"gap-2","label":"Semana 7 Jul 2026 - 13 Jul 2026","employees":[]},{"sourceId":"gap-3","label":"Semana 14 Jul 2026 - 20 Jul 2026","employees":[]},{"sourceId":"gap-4","label":"Semana 21 Jul 2026 - 27 Jul 2026","employees":[]},{"sourceId":"gap-5","label":"Semana 28 Jul 2026 - 3 Ago 2026","employees":[]},{"sourceId":"gap-6","label":"Semana 4 Ago 2026 - 10 Ago 2026","employees":[]},{"sourceId":"gap-7","label":"Semana 11 Ago 2026 - 17 Ago 2026","employees":[]},{"sourceId":"gap-8","label":"Semana 17 Ago 2026 - 23 Ago 2026","employees":[{"name":"Joselys Pérez Quintero","negocio":"Cosechas Puerto Viejo","rate":2000,"hours":[0,7,8,0,7,8,7]},{"name":"Joselys Pérez Quintero","negocio":"Luna Africana","rate":0,"hours":[0,0,0,7.5,0,0,0]},{"name":"Vicky Leticia Ulate Morales","negocio":"Cosechas Puerto Viejo","rate":2000,"hours":[0,0,7,7.5,8,0,8]},{"name":"Vicky Leticia Ulate Morales","negocio":"Luna Africana","rate":0,"hours":[0,2,0,0,0,0,0]},{"name":"Nefthaly Denaiya Clark Weir","negocio":"Cosechas Puerto Viejo","rate":2000,"hours":[0,8,0,7,0,7,0]},{"name":"Nefthaly Denaiya Clark Weir","negocio":"Luna Africana","rate":0,"hours":[0,0,6.5,0,0,0,0]},{"name":"Sharym Corbett Picado","negocio":"Cosechas Lagunilla","rate":1800,"hours":[5.5,5.5,9.5,5.5,5.5,9,0]}]},{"sourceId":"gap-9","label":"Semana 24 Ago 2026 - 30 Ago 2026","employees":[]},{"sourceId":"gap-10","label":"Semana 31 Ago 2026 - 6 Set 2026","employees":[]},{"sourceId":"gap-11","label":"Semana 7 Set 2026 - 13 Set 2026","employees":[{"name":"Nefthaly Denaiya Clark Weir","negocio":"Luna Africana","rate":0,"hours":[0,0,7,0,6.5,5,0],"extras":{"feriadoDoble":0,"vacacionesDias":0,"vacacionesSinGoce":0,"bono":0,"ccssAplica":true}},{"name":"Joselys Pérez Quintero","negocio":"Luna Africana","rate":0,"hours":[0,0,0,7.5,7.5,10,0],"extras":{"feriadoDoble":0,"vacacionesDias":0,"vacacionesSinGoce":0,"bono":0,"ccssAplica":true}},{"name":"Sharon Tais Palmer Chaves","negocio":"Luna Africana","rate":0,"hours":[0,0,0,5.5,6.5,0,0],"extras":{"feriadoDoble":0,"vacacionesDias":0,"vacacionesSinGoce":0,"bono":0,"ccssAplica":true}},{"name":"Sharym Corbett Picado","negocio":"Luna Africana","rate":0,"hours":[0,0,0,6.5,5.5,8.5,0],"extras":{"feriadoDoble":0,"vacacionesDias":0,"vacacionesSinGoce":0,"bono":0,"ccssAplica":true}},{"name":"Deykel Michelle Palmer Chaves","negocio":"Luna Africana","rate":2734.375,"hours":[0,0,0,4.5,8.5,0,0],"extras":{"feriadoDoble":0,"vacacionesDias":0,"vacacionesSinGoce":0,"bono":0,"ccssAplica":true}},{"name":"Vicky Leticia Ulate Morales","negocio":"Luna Africana","rate":0,"hours":[0,0,0,7,0,0,0],"extras":{"feriadoDoble":0,"vacacionesDias":0,"vacacionesSinGoce":0,"bono":0,"ccssAplica":true}},{"name":"Ángela del Socorro Rodríguez Roblero","negocio":"Luna Africana","rate":1800,"hours":[0,0,0,0,8,4,0],"extras":{"feriadoDoble":0,"vacacionesDias":0,"vacacionesSinGoce":0,"bono":0,"ccssAplica":true}},{"name":"Martha Lorena Vanegas Vanegas","negocio":"Luna Africana","rate":2650,"hours":[0,0,0,0,0,6,0],"extras":{"feriadoDoble":0,"vacacionesDias":0,"vacacionesSinGoce":0,"bono":0,"ccssAplica":true}}]}];
+
+let weeks = null;
+let expandedExtras = new Set();
+let vacData = null;
+
+// Cuadro de confirmación propio: confirm()/alert() del navegador se bloquean en
+// algunos entornos (la herramienta no hacía nada al borrar), así que no se usan.
+function askConfirm(message){
+  return new Promise(resolve=>{
+    const overlay = document.createElement('div');
+    overlay.className = 'confirm-modal';
+    overlay.innerHTML = '<div class="confirm-box"><p></p><div class="confirm-actions">' +
+      '<button type="button" data-confirm="no" class="confirm-no">Cancelar</button>' +
+      '<button type="button" data-confirm="yes" class="confirm-yes">Eliminar</button></div></div>';
+    overlay.querySelector('p').textContent = message;
+    const close = v => { overlay.remove(); resolve(v); };
+    overlay.querySelector('[data-confirm="yes"]').onclick = () => close(true);
+    overlay.querySelector('[data-confirm="no"]').onclick = () => close(false);
+    overlay.addEventListener('click', e => { if(e.target===overlay) close(false); });
+    document.body.appendChild(overlay);
+  });
+}
+function showToast(message){
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = message;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 3500);
+}
+
+function uid(){ return Math.random().toString(36).slice(2,9); }
+
+const CCSS_RATE = 0.1067; // tasa obrera CCSS Costa Rica, sobre el total con extras
+const MANUAL_EXTRA_FIELDS = [
+  {key:'feriadoDoble', label:'Feriados pago doble (monto)'},
+  {key:'vacacionesDias', label:'Vacaciones (cantidad de días)'},
+  {key:'vacacionesSinGoce', label:'Vacaciones sin goce (monto, informativo)'},
+  {key:'sinGoceDias', label:'Días sin goce (solo registro)'},
+  {key:'incapacidadDias', label:'Incapacidad CCSS (días, solo registro)'},
+  {key:'bono', label:'Bono (monto)'},
+];
+const QUINCENA_EXTRA_FIELDS = [
+  {key:'feriadoDoble', label:'Feriados pago doble (monto)', step:'1'},
+  {key:'vacacionesDias', label:'Vacaciones (cantidad de días)', step:'0.5'},
+  {key:'sinGoceDias', label:'Días sin goce (solo registro)', step:'0.5'},
+  {key:'incapacidadDias', label:'Incapacidad CCSS (días, solo registro)', step:'0.5'},
+  {key:'bono', label:'Bono (monto)', step:'1'},
+];
+function blankQuincenaExtras(){
+  const o = {};
+  QUINCENA_EXTRA_FIELDS.forEach(f=>o[f.key]=0);
+  return o;
+}
+function fmtDias(n){
+  return (Math.round((Number(n)||0)*10)/10).toLocaleString('es-CR',{maximumFractionDigits:1});
+}
+function blankExtras(){
+  const o = {ccssAplica: false};
+  MANUAL_EXTRA_FIELDS.forEach(f=>o[f.key]=0);
+  return o;
+}
+// Calcula el desglose completo de un empleado: salario base, extras que suman,
+// vacaciones (días × 8h × tarifa), CCSS (10.67% sobre el total con extras, solo si
+// está activado para esta persona) y el neto final.
+function empBreakdown(e){
+  const ex = e.extras || blankExtras();
+  const horas = e.hours.reduce((a,b)=>a+(Number(b)||0),0);
+  const rate = Number(e.rate)||0;
+  const baseSalario = rate>0 ? horas*rate : 0;
+  const feriadoDoble = Number(ex.feriadoDoble)||0;
+  const vacacionesDias = Number(ex.vacacionesDias)||0;
+  const vacacionesMonto = vacacionesDias * 8 * rate;
+  const bono = Number(ex.bono)||0;
+  const vacacionesSinGoce = Number(ex.vacacionesSinGoce)||0; // informativo, no suma ni resta
+  const totalConExtras = baseSalario + feriadoDoble + vacacionesMonto + bono;
+  const ccssAplica = !!ex.ccssAplica;
+  const ccssAuto = -CCSS_RATE * totalConExtras;
+  const ccssManual = (ex.ccssManual!==null && ex.ccssManual!==undefined && ex.ccssManual!=='') ? -Math.abs(Number(ex.ccssManual)) : null;
+  const ccss = ccssAplica ? (ccssManual!==null ? ccssManual : ccssAuto) : 0;
+  const neto = totalConExtras + ccss;
+  const rateNeeded = (horas>0 || vacacionesDias>0) && rate<=0;
+  return {horas, rate, baseSalario, feriadoDoble, vacacionesDias, vacacionesMonto, bono,
+          vacacionesSinGoce, totalConExtras, ccssAplica, ccssAuto, ccssManual, ccss, neto, rateNeeded,
+          hasAnyData: horas>0 || feriadoDoble || vacacionesDias || bono || vacacionesSinGoce};
+}
+
+// Alias de nombres: variantes cortas/mal escritas → nombre completo canónico.
+// Se aplica en cada carga (ensureIds), no como parche de una sola vez, para
+// que cualquier variante que se cuele (por escritura manual, etc.) se
+// corrija sola la próxima vez que se abra la herramienta.
+const NAME_ALIASES = {
+  'Nefth': 'Nefthaly Denaiya Clark Weir', 'Neftaly': 'Nefthaly Denaiya Clark Weir',
+  'Neftalí': 'Nefthaly Denaiya Clark Weir', 'Neftali': 'Nefthaly Denaiya Clark Weir',
+  'Nefthaly Denaiya Clark weir': 'Nefthaly Denaiya Clark Weir',
+  'Sharym': 'Sharym Corbett Picado', 'Kiki': 'Sharym Corbett Picado',
+  'Sharym Akisha Corbett Picado': 'Sharym Corbett Picado',
+  'Angela': 'Ángela del Socorro Rodríguez Roblero',
+  'Ángela del Socorro Rodriguez Roblero': 'Ángela del Socorro Rodríguez Roblero',
+  'Yos': 'Joselys Pérez Quintero', 'Yoseris': 'Joselys Pérez Quintero', 'Joss': 'Joselys Pérez Quintero',
+  'Vicky': 'Vicky Leticia Ulate Morales',
+  'Martha': 'Martha Lorena Vanegas Vanegas',
+  'Deykel': 'Deykel Michelle Palmer Chaves', 'Dey': 'Deykel Michelle Palmer Chaves',
+};
+function canonicalName(n){
+  const trimmed = (n||'').trim();
+  return NAME_ALIASES[trimmed] || trimmed;
+}
+
+function ensureIds(ws){
+  ws.forEach(w=>{
+    if(!w.id) w.id = uid();
+    w.employees.forEach(e=>{
+      if(!e.id) e.id = uid();
+      if(e.negocio===undefined) e.negocio = '';
+      if(!e.extras) e.extras = blankExtras();
+      if(e.extras.ccssAplica===undefined) e.extras.ccssAplica = false;
+      if(e.extras.ccssManual===undefined) e.extras.ccssManual = null;
+      MANUAL_EXTRA_FIELDS.forEach(f=>{ if(e.extras[f.key]===undefined) e.extras[f.key] = 0; });
+      e.name = canonicalName(e.name);
+    });
+  });
+  return ws;
+}
+
+function fmtCRC(n){
+  if(n===null || n===undefined || isNaN(n)) return '—';
+  return '₡' + n.toLocaleString('es-CR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function weekTotals(w){
+  let horas=0, pago=0, hasEmpty=false;
+  w.employees.forEach(e=>{
+    const b = empBreakdown(e);
+    horas += b.horas;
+    if(b.rateNeeded) hasEmpty = true;
+    if(b.hasAnyData) pago += b.neto;
+  });
+  return {horas, pago, hasEmpty};
+}
+
+async function saveWeeks(){
+  const dot = document.getElementById('saveDot');
+  const txt = document.getElementById('saveText');
+  dot.classList.add('saving'); txt.textContent = 'Guardando…';
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(weeks), false);
+    await window.storage.set(DIRECTORIO_KEY, JSON.stringify(directorio), false);
+    await window.storage.set(DIRECTORIO_DELETED_KEY, JSON.stringify(directorioEliminados), false);
+    await window.storage.set(DELETED_SRC_KEY, JSON.stringify(eliminadosFuente), false);
+    await window.storage.set(QUINCENAS_KEY, JSON.stringify(quincenas), false);
+    txt.textContent = 'Guardado';
+  }catch(err){
+    txt.textContent = 'No se pudo guardar (solo en esta sesión)';
+  }
+  dot.classList.remove('saving');
+}
+
+async function loadDirectorioDeleted(){
+  try{
+    const res = await window.storage.get(DIRECTORIO_DELETED_KEY, false);
+    if(res && res.value) return JSON.parse(res.value);
+  }catch(err){ /* nada borrado todavía */ }
+  return [];
+}
+
+async function loadDirectorio(){
+  directorioEliminados = await loadDirectorioDeleted();
+  const deletedSet = new Set(directorioEliminados);
+  let stored = null;
+  try{
+    const res = await window.storage.get(DIRECTORIO_KEY, false);
+    if(res && res.value) stored = JSON.parse(res.value);
+  }catch(err){ /* no stored data yet */ }
+  if(!stored){
+    return JSON.parse(JSON.stringify(DIRECTORIO_SEED))
+      .filter(p=>!deletedSet.has(p.nombre))
+      .map(p=>({id:uid(), estado:'activa', fechaIngreso:'', fechaSalida:'', ...p}));
+  }
+  stored.forEach(p=>{ p.nombre = canonicalName(p.nombre); });
+  const existingNames = new Set(stored.map(p=>p.nombre));
+  DIRECTORIO_SEED.forEach(p=>{
+    // No vuelve a agregar a quien ya está, ni a quien se borró a propósito.
+    if(!existingNames.has(p.nombre) && !deletedSet.has(p.nombre)) stored.push({id:uid(), ...p});
+  });
+  stored.forEach(p=>{
+    if(!p.id) p.id = uid();
+    if(!p.estado) p.estado = 'activa';
+    if(p.fechaIngreso===undefined) p.fechaIngreso = '';
+    if(p.fechaSalida===undefined) p.fechaSalida = '';
+  });
+  return stored;
+}
+
+async function loadWeeks(){
+  let stored = null;
+  try{
+    const res = await window.storage.get(STORAGE_KEY, false);
+    if(res && res.value) stored = JSON.parse(res.value);
+  }catch(err){ /* no stored data yet */ }
+
+  if(!stored){
+    return ensureIds(JSON.parse(JSON.stringify(SEED)).filter(w=>!w.sourceId || !eliminadosFuente.includes(w.sourceId)));
+  }
+  // Merge: keep everything already stored (including edits), and append any
+  // seed week (identified by sourceId) that isn't present yet.
+  const existingIds = new Set(stored.filter(w=>w.sourceId).map(w=>w.sourceId));
+  let added = 0;
+  SEED.forEach(w=>{
+    if(w.sourceId && !existingIds.has(w.sourceId)){
+      stored.push(JSON.parse(JSON.stringify(w)));
+      added++;
+    }
+  });
+  if(added>0){ window.__mergedCount = added; }
+
+  // Targeted correction: Deykel's true rate (₡131,250/semana ≈ ₡2,982.95/h) was
+  // confirmed after the first Table B import. Patch it in for anyone whose
+  // Deykel rows are still at the old "sin tarifa" (0) state, without touching
+  // rows the user may have already edited by hand.
+  const DEYKEL_RATE = 131250 / 44;
+  let patched = 0;
+  stored.forEach(w=>{
+    w.employees.forEach(e=>{
+      if(e.name === 'Deykel' && Number(e.rate) === 0){
+        e.rate = DEYKEL_RATE;
+        patched++;
+      }
+    });
+  });
+  if(patched>0){ window.__patchedCount = patched; }
+
+  // Targeted content patch: fill in the previously-empty "Semana 17 Ago - 23
+  // Ago" week with the schedule the user provided, but only if the user
+  // hasn't already started filling it in themselves (still empty).
+  const WEEK_PATCHES = {
+    'gap-8': [
+      {name:'Yos', negocio:'Cosechas Puerto Viejo', rate:0, hours:[0,7,8,0,7,8,7]},
+      {name:'Yos', negocio:'Luna Africana', rate:0, hours:[0,0,0,7.5,0,0,0]},
+      {name:'Vicky', negocio:'Cosechas Puerto Viejo', rate:0, hours:[0,0,7,7.5,8,0,8]},
+      {name:'Vicky', negocio:'Luna Africana', rate:0, hours:[0,2,0,0,0,0,0]},
+      {name:'Nefth', negocio:'Cosechas Puerto Viejo', rate:0, hours:[0,8,0,7,0,7,0]},
+      {name:'Nefth', negocio:'Luna Africana', rate:0, hours:[0,0,6.5,0,0,0,0]},
+    ],
+  };
+  let weekPatched = 0;
+  stored.forEach(w=>{
+    if(WEEK_PATCHES[w.sourceId] && w.employees.length===0){
+      w.employees = WEEK_PATCHES[w.sourceId].map(e=>({id:uid(), ...e}));
+      weekPatched++;
+    }
+  });
+  if(weekPatched>0){ window.__weekPatchedCount = weekPatched; }
+
+  // Bulk correction: every collaborator without a negocio assigned has, in
+  // fact, always been Luna Africana — and a few names were recorded
+  // inconsistently across records (Yos/Joss/Joselys → Yoseris, Nefth → Neftali).
+  let negocioAssigned = 0, renamed = 0;
+  stored.forEach(w=>{
+    w.employees.forEach(e=>{
+      if(!e.negocio || e.negocio.trim()===''){ e.negocio = 'Luna Africana'; negocioAssigned++; }
+      if(e.name === 'Yos'){ e.name = 'Yoseris'; renamed++; }
+      if(e.name === 'Nefth'){ e.name = 'Neftali'; renamed++; }
+    });
+  });
+  if(negocioAssigned>0 || renamed>0){ window.__negocioBulkCount = negocioAssigned; }
+
+  // Correction: Vicky, Yoseris and Neftali's Cosechas Puerto Viejo rate is
+  // confirmed at ₡2,000/hora, and their two historical weeks (16-21 Jun and
+  // 22-29 Jun) were mistakenly bulk-assigned to Luna Africana — they
+  // actually belong to Cosechas Puerto Viejo, since they barely work at
+  // Luna Africana.
+  let cosechasFix = 0;
+  stored.forEach(w=>{
+    const isHistoricalYosVicky = ['B-r577','B-r590'].includes(w.sourceId);
+    w.employees.forEach(e=>{
+      if(isHistoricalYosVicky && (e.name==='Yoseris' || e.name==='Vicky') && e.negocio==='Luna Africana'){
+        e.negocio = 'Cosechas Puerto Viejo';
+        cosechasFix++;
+      }
+      if(e.negocio==='Cosechas Puerto Viejo' && ['Yoseris','Vicky','Neftali'].includes(e.name) && Number(e.rate)===0){
+        e.rate = 2000;
+        cosechasFix++;
+      }
+    });
+  });
+  if(cosechasFix>0){ window.__cosechasFixCount = cosechasFix; }
+
+  // Add Sharym (Cosechas Lagunilla) to the Aug 17-23 week if she isn't there yet.
+  const gap8 = stored.find(w=>w.sourceId==='gap-8');
+  if(gap8 && !gap8.employees.some(e=>e.name==='Sharym Akisha Corbett Picado')){
+    gap8.employees.push({
+      id: uid(), name:'Sharym Akisha Corbett Picado', negocio:'Cosechas Lagunilla',
+      rate:1800, hours:[5.5,5.5,9.5,5.5,5.5,9,0],
+    });
+    window.__sharymAdded = true;
+  }
+
+  // Full legal names confirmed by the user — consolidate short/alias
+  // versions into one canonical record per person.
+  const NAME_RENAME = {
+    'Martha': 'Martha Lorena Vanegas Vanegas',
+    'Vicky': 'Vicky Leticia Ulate Morales',
+    'Yoseris': 'Joselys Pérez Quintero',
+    'Angela': 'Ángela del Socorro Rodríguez Roblero',
+    'Deykel': 'Deykel Michelle Palmer Chaves',
+  };
+  let fullNameCount = 0;
+  stored.forEach(w=>{
+    w.employees.forEach(e=>{
+      if(NAME_RENAME[e.name]){ e.name = NAME_RENAME[e.name]; fullNameCount++; }
+    });
+  });
+  if(fullNameCount>0){ window.__fullNameCount = fullNameCount; }
+
+  // Spelling correction: Ulate, not Olarte.
+  let surnameFixed = 0;
+  stored.forEach(w=>{
+    w.employees.forEach(e=>{
+      if(e.name === 'Vicky Leticia Olarte Morales'){
+        e.name = 'Vicky Leticia Ulate Morales';
+        surnameFixed++;
+      }
+    });
+  });
+  if(surnameFixed>0){ window.__surnameFixed = surnameFixed; }
+
+  // Deykel's hours for 11-17, 17-23 and 24-30 Ago, using her usual pattern
+  // (miércoles-domingo 8h + lunes 4h = 44h).
+  const DEYKEL_HOURS = [4,0,8,8,8,8,8];
+  const DEYKEL_RATE_AUG = 131250/44;
+  function addDeykelIfMissing(w){
+    if(w && !w.employees.some(e=>e.name.includes('Deykel'))){
+      w.employees.push({
+        name: 'Deykel Michelle Palmer Chaves', negocio: 'Luna Africana',
+        rate: DEYKEL_RATE_AUG, hours: DEYKEL_HOURS.slice(),
+      });
+      return true;
+    }
+    return false;
+  }
+  let deykelAugAdded = 0;
+  if(addDeykelIfMissing(stored.find(w=>w.sourceId==='gap-7'))) deykelAugAdded++;
+  if(addDeykelIfMissing(stored.find(w=>w.sourceId==='gap-8'))) deykelAugAdded++;
+  if(!stored.some(w=>w.sourceId==='gap-9')){
+    stored.push({
+      sourceId: 'gap-9', label: 'Semana 24 Ago - 30 Ago',
+      employees: [{
+        name: 'Deykel Michelle Palmer Chaves', negocio: 'Luna Africana',
+        rate: DEYKEL_RATE_AUG, hours: DEYKEL_HOURS.slice(),
+      }],
+    });
+    deykelAugAdded++;
+  }
+  if(deykelAugAdded>0){ window.__deykelAugAdded = deykelAugAdded; }
+
+  // New week: 31 Ago - 6 Set, with the extra pay-component fields (feriados,
+  // vacaciones, bono, CCSS) — ensureIds() below fills in blank extras for
+  // every existing employee automatically.
+  if(!stored.some(w=>w.sourceId==='gap-10')){
+    stored.push({sourceId:'gap-10', label:'Semana 31 Ago - 6 Set', employees:[]});
+    window.__gap10Added = true;
+  }
+
+  // Semana 7-13 Set, horario extraído de marcas de WhatsApp.
+  if(!stored.some(w=>w.sourceId==='gap-11')){
+    const LA = 'Luna Africana';
+    stored.push({sourceId:'gap-11', label:'Semana 7 Set - 13 Set', employees:[
+      {name:'Neftali', negocio:LA, rate:0, hours:[0,0,7.0,0,6.5,5.0,0]},
+      {name:'Joselys Pérez Quintero', negocio:LA, rate:0, hours:[0,0,0,7.5,7.5,10.0,0]},
+      {name:'Sharon Tais Palmer Chaves', negocio:LA, rate:0, hours:[0,0,0,5.5,6.5,0,0]},
+      {name:'Sharym Akisha Corbett Picado', negocio:LA, rate:0, hours:[0,0,0,6.5,5.5,8.5,0]},
+      {name:'Deykel Michelle Palmer Chaves', negocio:LA, rate:2734.375, hours:[0,0,0,4.5,8.5,0,0]},
+      {name:'Vicky Leticia Ulate Morales', negocio:LA, rate:0, hours:[0,0,0,7.0,0,0,0]},
+      {name:'Ángela del Socorro Rodríguez Roblero', negocio:LA, rate:1800, hours:[0,0,0,0,8.0,4.0,0]},
+      {name:'Martha Lorena Vanegas Vanegas', negocio:LA, rate:2650, hours:[0,0,0,0,0,6.0,0]},
+    ]});
+    window.__gap11Added = true;
+  }
+
+  // Borrar las semanas de setiembre-noviembre 2025 (el aguinaldo se calcula
+  // desde diciembre), agregar el año a cada rótulo, y activar el rebajo de
+  // CCSS para todas a partir de la semana del 31 Ago - 6 Set 2026.
+  const DELETE_SEPT_NOV_2025 = ['B-r69','B-r82','B-r95','B-r107','B-r119','B-r131','B-r143','B-r155','B-r168','B-r180','B-r192','B-r204','B-r216'];
+  const beforeLen = stored.length;
+  stored = stored.filter(w => !DELETE_SEPT_NOV_2025.includes(w.sourceId));
+  const deletedCount = beforeLen - stored.length;
+
+  function stripAccentsY(s){ return s.normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+  function yearForMonth(monthTxt){
+    const mm = stripAccentsY(monthTxt.toLowerCase());
+    return mm.startsWith('dic') ? 2025 : 2026;
+  }
+  let relabeled = 0;
+  stored.forEach(w=>{
+    if(/\d{4}/.test(w.label)) return; // ya tiene año, no tocar
+    const mm = w.label.match(/^(Semana\s+\d+\s+)([A-Za-zÀ-ÿ]+)(\s*-\s*)(\d+\s+)([A-Za-zÀ-ÿ]+)$/);
+    if(!mm) return;
+    const [, pre1, mon1, , day2, mon2] = mm;
+    const y1 = yearForMonth(mon1), y2 = yearForMonth(mon2);
+    w.label = `${pre1}${mon1} ${y1} - ${day2}${mon2} ${y2}`;
+    relabeled++;
+  });
+
+  let ccssFromAug31 = 0;
+  stored.forEach(w=>{
+    if(w.sourceId==='gap-10' || w.sourceId==='gap-11'){
+      w.employees.forEach(e=>{
+        if(!e.extras) e.extras = {feriadoDoble:0, vacacionesDias:0, vacacionesSinGoce:0, bono:0};
+        if(!e.extras.ccssAplica){ e.extras.ccssAplica = true; ccssFromAug31++; }
+      });
+    }
+  });
+
+  if(deletedCount>0){ window.__deletedSeptNov = deletedCount; }
+  if(relabeled>0){ window.__relabeledYears = relabeled; }
+  if(ccssFromAug31>0){ window.__ccssFromAug31 = ccssFromAug31; }
+
+  stored = stored.filter(w=>!w.sourceId || !eliminadosFuente.includes(w.sourceId));
+  return ensureIds(stored);
+}
+
+function updateAndSave(){ render(); saveWeeks(); }
+
+function addWeek(){
+  weeks.push({ id:uid(), label:'', employees:[
+    {id:uid(), name:'', rate:0, negocio:'', hours:[0,0,0,0,0,0,0], extras:blankExtras()},
+    {id:uid(), name:'', rate:0, negocio:'', hours:[0,0,0,0,0,0,0], extras:blankExtras()},
+  ]});
+  updateAndSave();
+}
+
+async function removeWeek(wid){
+  if(!(await askConfirm('¿Eliminar esta semana?'))) return;
+  const gone = weeks.find(w=>w.id===wid);
+  if(gone && gone.sourceId && !eliminadosFuente.includes(gone.sourceId)) eliminadosFuente.push(gone.sourceId);
+  weeks = weeks.filter(w=>w.id!==wid);
+  updateAndSave();
+}
+
+function addEmployee(wid, negocio){
+  const w = weeks.find(x=>x.id===wid);
+  w.employees.push({id:uid(), name:'', rate:0, negocio: negocio||'', hours:[0,0,0,0,0,0,0], extras:blankExtras()});
+  updateAndSave();
+}
+
+function removeEmployee(wid, eid){
+  const w = weeks.find(x=>x.id===wid);
+  w.employees = w.employees.filter(e=>e.id!==eid);
+  updateAndSave();
+}
+
+function renderSummaryBar(){
+  const el = document.getElementById('summaryBar');
+  let totalHoras=0, totalPago=0, totalSemanas=weeks.length, pendientes=0;
+  weeks.forEach(w=>{
+    const t = weekTotals(w);
+    totalHoras += t.horas; totalPago += t.pago;
+    if(t.hasEmpty) pendientes++;
+  });
+  let qHoras=0, qPago=0;
+  (quincenas||[]).forEach(q=>{
+    q.empleados.forEach(e=>{
+      const t = quincenaEmpTotals(e);
+      qHoras += t.horas;
+      if(t.pago!==null) qPago += t.pago;
+    });
+  });
+  el.innerHTML = `
+    <div class="summary-cell"><div class="label">Semanas</div><div class="value">${totalSemanas}</div></div>
+    <div class="summary-cell"><div class="label">Horas totales (semanal)</div><div class="value">${totalHoras.toLocaleString('es-CR')}</div></div>
+    <div class="summary-cell"><div class="label">Pagado (semanal + quincenal)</div><div class="value">${fmtCRC(totalPago+qPago)}</div></div>
+    <div class="summary-cell"><div class="label">Semanas con tarifa pendiente</div><div class="value">${pendientes}</div></div>
+  `;
+}
+
+function dirRowHtml(p, counts, vac){
+  const key = (p.nombre||'').trim().toLowerCase();
+  const isDup = key && counts[key] > 1;
+  const r = vac.perName[canonicalName(p.nombre)] || {};
+  const q = v => (v||'').replace(/"/g,'&quot;');
+  return `
+    <tr data-pid="${p.id}" class="${isDup?'flag':''}">
+      <td class="emp"><input class="name" value="${q(p.nombre)}" placeholder="Nombre" data-field="nombre"></td>
+      <td><input class="negocio" value="${q(p.identificacion)}" placeholder="Identificación" data-field="identificacion"></td>
+      <td>
+        <select data-field="tipoNomina" class="negocio">
+          <option value="Semanal" ${p.tipoNomina==='Semanal'?'selected':''}>Semanal</option>
+          <option value="Quincenal" ${p.tipoNomina==='Quincenal'?'selected':''}>Quincenal</option>
+        </select>
+      </td>
+      <td><input class="negocio" type="date" style="width:132px" value="${q(p.fechaIngreso)}" data-field="fechaIngreso" title="Primer día de trabajo"></td>
+      <td><input class="negocio" type="date" style="width:132px" value="${q(p.fechaSalida)}" data-field="fechaSalida" title="Último día de trabajo"></td>
+      <td class="reg-cell">${fmtRegistro(r.primero)}</td>
+      <td class="reg-cell">${fmtRegistro(r.ultimo)}</td>
+      <td><input class="negocio" type="number" step="0.5" style="width:74px" value="${Number(p.vacAjuste)||0}" data-field="vacAjuste" title="Días a favor (+) o ya tomados antes de este registro (−)"></td>
+      <td>
+        <select data-field="estado" class="negocio">
+          <option value="activa" ${p.estado!=='inactiva'?'selected':''}>Activa</option>
+          <option value="inactiva" ${p.estado==='inactiva'?'selected':''}>Ya no trabaja</option>
+        </select>
+      </td>
+      <td><button class="rm-emp" data-action="rm-directorio" title="Eliminar del directorio">×</button></td>
+    </tr>`;
+}
+
+function renderDirectorio(){
+  const counts = {};
+  directorio.forEach(p=>{
+    const key = (p.nombre||'').trim().toLowerCase();
+    if(key) counts[key] = (counts[key]||0) + 1;
+  });
+  const vac = computeVacaciones();
+  const activas = directorio.filter(p=>p.estado!=='inactiva');
+  const inactivas = directorio.filter(p=>p.estado==='inactiva');
+  const empty = txt => `<tr><td colspan="10" style="text-align:center;color:var(--ink-soft);padding:14px;">${txt}</td></tr>`;
+  document.getElementById('directorioBody').innerHTML =
+    activas.map(p=>dirRowHtml(p, counts, vac)).join('') || empty('Sin colaboradoras activas en el directorio');
+  document.getElementById('directorioInactivasBody').innerHTML =
+    inactivas.map(p=>dirRowHtml(p, counts, vac)).join('') || empty('Nadie marcada como "Ya no trabaja"');
+  document.getElementById('dirCountActivas').textContent = `(${activas.length})`;
+  document.getElementById('dirCountInactivas').textContent = `(${inactivas.length})`;
+
+  document.querySelectorAll('#directorioSection tr[data-pid]').forEach(row=>{
+    const pid = row.dataset.pid;
+    const p = directorio.find(x=>x.id===pid);
+    const on = (field, fn) => row.querySelector(`[data-field="${field}"]`).addEventListener('change', fn);
+    on('nombre', e=>{ p.nombre = e.target.value; saveWeeks(); });
+    on('identificacion', e=>{ p.identificacion = e.target.value; saveWeeks(); });
+    on('tipoNomina', e=>{ p.tipoNomina = e.target.value; saveWeeks(); });
+    on('fechaIngreso', e=>{ p.fechaIngreso = e.target.value; saveWeeks(); });
+    on('fechaSalida', e=>{ p.fechaSalida = e.target.value; saveWeeks(); });
+    on('vacAjuste', e=>{ p.vacAjuste = Number(e.target.value)||0; updateAndSave(); });
+    on('estado', e=>{ p.estado = e.target.value; updateAndSave(); });
+    row.querySelector('[data-action="rm-directorio"]').addEventListener('click', async ()=>{
+      if(!(await askConfirm(`¿Eliminar a "${p.nombre||'(sin nombre)'}" del directorio?`))) return;
+      directorio = directorio.filter(x=>x.id!==pid);
+      // Recuerda el nombre para que no se vuelva a agregar solo en la próxima carga.
+      if(p.nombre && !directorioEliminados.includes(p.nombre)) directorioEliminados.push(p.nombre);
+      updateAndSave();
+    });
+  });
+}
+
+function importMissingToDirectorio(){
+  const vac = computeVacaciones();
+  const recent = recentActiveNames();
+  const have = new Set(directorio.map(p=>canonicalName(p.nombre)));
+  const skip = new Set(directorioEliminados);
+  let added = 0;
+  Object.keys(vac.perName).sort((a,b)=>a.localeCompare(b,'es')).forEach(n=>{
+    if(have.has(n) || skip.has(n)) return;
+    directorio.push({id:uid(), nombre:n, identificacion:'', tipoNomina:'Semanal', vacAjuste:0,
+      estado: recent.has(n) ? 'activa' : 'inactiva', fechaIngreso:'', fechaSalida:''});
+    added++;
+  });
+  updateAndSave();
+  showToast(added
+    ? `Se agregaron ${added} colaboradora(s). Las que no aparecen en las últimas semanas quedaron como "Ya no trabaja"; revisalas y poné las fechas.`
+    : 'No faltaba nadie: todas las colaboradoras de los registros ya están en el directorio.');
+}
+
+function mergeDirectorioDuplicates(){
+  const byName = {};
+  const order = [];
+  directorio.forEach(p=>{
+    const key = (p.nombre||'').trim().toLowerCase();
+    if(!key) { order.push(p); return; } // sin nombre, no se fusiona
+    if(!byName[key]){
+      byName[key] = p;
+      order.push(p);
+    } else {
+      // conserva el dato que ya esté lleno; el duplicado se descarta
+      if(!byName[key].identificacion && p.identificacion) byName[key].identificacion = p.identificacion;
+      if(p.tipoNomina==='Quincenal') byName[key].tipoNomina = 'Quincenal';
+      if(!byName[key].vacAjuste && p.vacAjuste) byName[key].vacAjuste = p.vacAjuste;
+      if(!byName[key].fechaIngreso && p.fechaIngreso) byName[key].fechaIngreso = p.fechaIngreso;
+      if(!byName[key].fechaSalida && p.fechaSalida) byName[key].fechaSalida = p.fechaSalida;
+      if(p.estado==='inactiva' && byName[key].estado!=='inactiva') byName[key].estado = 'inactiva';
+    }
+  });
+  const before = directorio.length;
+  directorio = order.filter(p=>{
+    const key = (p.nombre||'').trim().toLowerCase();
+    return !key || byName[key]===p;
+  });
+  const removed = before - directorio.length;
+  renderDirectorio();
+  saveWeeks();
+  showToast(removed>0 ? `Se fusionaron ${removed} duplicado(s).` : 'No se encontraron nombres duplicados exactos.');
+}
+
+async function loadQuincenas(){
+  let stored = null;
+  try{
+    const res = await window.storage.get(QUINCENAS_KEY, false);
+    if(res && res.value) stored = JSON.parse(res.value);
+  }catch(err){ /* no stored data yet */ }
+  if(!stored) return ensureQuincenaIds(JSON.parse(JSON.stringify(QUINCENA_SEED)).filter(q=>!q.sourceId || !eliminadosFuente.includes(q.sourceId)));
+  const existingIds = new Set(stored.filter(q=>q.sourceId).map(q=>q.sourceId));
+  QUINCENA_SEED.forEach(q=>{
+    if(q.sourceId && !existingIds.has(q.sourceId)) stored.push(JSON.parse(JSON.stringify(q)));
+  });
+  stored = stored.filter(q=>!q.sourceId || !eliminadosFuente.includes(q.sourceId));
+  return ensureQuincenaIds(stored);
+}
+
+// Si el rótulo de una quincena no trae año, le agrega 2026 (los de diciembre se
+// dejan como están porque pueden ser 2025 o 2026).
+function addYearToLabel(label){
+  if(!label || /\d{4}/.test(label)) return label;
+  const mm = label.match(/^(Semana\s+\d+\s+)([A-Za-zÀ-ÿ]+)(\s*-\s*)(\d+\s+)([A-Za-zÀ-ÿ]+)$/);
+  if(!mm) return label;
+  const [, pre1, mon1, , day2, mon2] = mm;
+  const isDic = m => stripAccents(m.toLowerCase()).startsWith('dic');
+  if(isDic(mon1) || isDic(mon2)) return label;
+  return `${pre1}${mon1} 2026 - ${day2}${mon2} 2026`;
+}
+
+function ensureQuincenaIds(qs){
+  qs.forEach(q=>{
+    if(!q.id) q.id = uid();
+    q.label = addYearToLabel(q.label);
+    q.empleados.forEach(e=>{
+      if(!e.id) e.id = uid();
+      if(e.ccssAplica===undefined) e.ccssAplica = false;
+      if(e.ccssManual===undefined) e.ccssManual = null;
+      if(!e.extras) e.extras = blankQuincenaExtras();
+      QUINCENA_EXTRA_FIELDS.forEach(f=>{ if(e.extras[f.key]===undefined) e.extras[f.key] = 0; });
+      e.name = canonicalName(e.name);
+    });
+  });
+  return qs;
+}
+
+function quincenaEmpTotals(e){
+  const ex = e.extras || blankQuincenaExtras();
+  const horas = e.dias.reduce((a,d)=>a+(Number(d.horas)||0),0);
+  const rate = Number(e.rate)||0;
+  const feriadoDoble = Number(ex.feriadoDoble)||0;
+  const vacacionesDias = Number(ex.vacacionesDias)||0;
+  const vacacionesMonto = vacacionesDias * 8 * rate;
+  const bono = Number(ex.bono)||0;
+  const base = rate>0 ? horas*rate : 0;
+  const totalConExtras = base + feriadoDoble + vacacionesMonto + bono;
+  const bruto = (rate>0 || feriadoDoble>0 || bono>0) ? totalConExtras : null;
+  const ccssAplica = !!e.ccssAplica;
+  const ccssAuto = bruto!==null ? -CCSS_RATE*bruto : 0;
+  const ccssManual = (e.ccssManual!==null && e.ccssManual!==undefined && e.ccssManual!=='') ? -Math.abs(Number(e.ccssManual)) : null;
+  const ccss = (bruto!==null && ccssAplica) ? (ccssManual!==null ? ccssManual : ccssAuto) : 0;
+  const pago = bruto===null ? null : bruto + ccss;
+  return {horas, bruto, ccssAplica, ccssAuto, ccssManual, ccss, pago, feriadoDoble, vacacionesDias, vacacionesMonto, bono};
+}
+
+function addQuincena(){
+  quincenas.push({id:uid(), sourceId:null, label:'', empleados:[
+    {id:uid(), name:'', negocio:'', rate:0, ccssAplica:false, ccssManual:null, extras:blankQuincenaExtras(), dias: Array.from({length:15}, (_,i)=>({label:`Día ${i+1}`, horas:0}))}
+  ]});
+  updateAndSave();
+}
+
+function addQuincenaEmpleado(qid){
+  const q = quincenas.find(x=>x.id===qid);
+  q.empleados.push({id:uid(), name:'', negocio:'', rate:0, ccssAplica:false, ccssManual:null, extras:blankQuincenaExtras(), dias: Array.from({length:15}, (_,i)=>({label:`Día ${i+1}`, horas:0}))});
+  updateAndSave();
+}
+
+async function removeQuincena(qid){
+  if(!(await askConfirm('¿Eliminar esta quincena?'))) return;
+  const goneQ = quincenas.find(q=>q.id===qid);
+  if(goneQ && goneQ.sourceId && !eliminadosFuente.includes(goneQ.sourceId)) eliminadosFuente.push(goneQ.sourceId);
+  quincenas = quincenas.filter(q=>q.id!==qid);
+  updateAndSave();
+}
+
+function removeQuincenaEmpleado(qid, eid){
+  const q = quincenas.find(x=>x.id===qid);
+  q.empleados = q.empleados.filter(e=>e.id!==eid);
+  updateAndSave();
+}
+
+function quincenaCardHtml(q){
+  const empHtml = q.empleados.map(e=>{
+    const t = quincenaEmpTotals(e);
+    const qex = e.extras || blankQuincenaExtras();
+    const hasQExtras = QUINCENA_EXTRA_FIELDS.some(f=>Number(qex[f.key])>0);
+    const qFieldsHtml = QUINCENA_EXTRA_FIELDS.map(f=>`
+        <div class="extra-field">
+          <label>${f.label}</label>
+          <input type="number" min="0" step="${f.step}" value="${qex[f.key]||0}" data-qextra="${f.key}">
+        </div>`).join('');
+    const half = Math.ceil(e.dias.length/2);
+    const col1 = e.dias.slice(0, half), col2 = e.dias.slice(half);
+    const diaRow = (d, idx) => `<tr data-idx="${idx}">
+        <td><input class="dia-label" value="${d.label.replace(/"/g,'&quot;')}" data-field="dia-label"></td>
+        <td><input class="dia-horas" type="number" min="0" step="0.5" value="${d.horas}" data-field="dia-horas"></td>
+      </tr>`;
+    return `<div class="quincena-emp ${rowHit(e)?'search-hit':''}" data-eid="${e.id}">
+      <div class="quincena-emp-head">
+        <input class="name" value="${e.name.replace(/"/g,'&quot;')}" placeholder="Nombre" data-field="name">
+        <input class="negocio" list="negocios-list" value="${(e.negocio||'').replace(/"/g,'&quot;')}" placeholder="Negocio" data-field="negocio">
+        <input class="rate" type="number" min="0" step="1" value="${e.rate}" data-field="rate">
+        <label class="ccss-checkbox">
+          <input type="checkbox" data-extra-ccss="1" ${t.ccssAplica?'checked':''}>
+          CCSS
+        </label>
+        <input type="number" min="0" step="1" class="ccss-manual-inline" placeholder="${Math.round(Math.abs(t.ccssAuto))}"
+          value="${t.ccssManual!==null ? Math.abs(t.ccssManual) : ''}" data-extra-ccss-monto="1" title="Monto manual de CCSS (vacío = automático ${(CCSS_RATE*100).toFixed(2)}%)">
+        <button class="extras-toggle ${hasQExtras?'has-extras':''}" data-action="toggle-q-extras" title="Feriados, vacaciones, días sin goce, bono">${hasQExtras?'●':'+'}</button>
+        <button class="rm-emp" data-action="rm-q-emp" title="Eliminar colaboradora">×</button>
+      </div>
+      <div class="quincena-extras" ${expandedExtras.has(e.id)?'':'hidden'}>
+        <div class="extras-grid">${qFieldsHtml}</div>
+        <div class="extra-computed">
+          <div><span>Vacaciones (₡)</span><b>${fmtCRC(t.vacacionesMonto)}</b></div>
+          <div><span>Total con extras</span><b>${t.bruto!==null?fmtCRC(t.bruto):'—'}</b></div>
+        </div>
+      </div>
+      <div class="quincena-days-grid">
+        <table class="dias-table">${col1.map((d,i)=>diaRow(d,i)).join('')}</table>
+        <table class="dias-table">${col2.map((d,i)=>diaRow(d,i+half)).join('')}</table>
+      </div>
+      <div class="quincena-emp-foot">
+        ${vacBadgeHtml(e.id)}
+        <span>Total: ${t.horas}h</span>
+        ${t.bruto!==null ? `<span>Bruto: ${fmtCRC(t.bruto)}</span>` : ''}
+        ${t.ccssAplica ? `<span class="ccss-neg">CCSS${t.ccssManual!==null?' (manual)':''}: ${fmtCRC(t.ccss)}</span>` : ''}
+        <span class="neto-span">${t.pago===null ? (t.horas>0?'sin tarifa':'—') : fmtCRC(t.pago)}</span>
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="week" data-qid="${q.id}">
+    <div class="week-head">
+      <input class="label" value="${q.label.replace(/"/g,'&quot;')}" placeholder="Quincena (ej. 16 Ago - 30 Ago)" data-field="qlabel">
+      <div class="week-actions">
+        <span class="period-tag quincenal">Quincenal</span>${parseSortKey(q.label)[0]===9999?'<span class="period-tag warn" title="La herramienta no pudo leer una fecha en este rótulo">sin fecha legible</span>':''}
+        <button class="icon-btn" data-action="rm-quincena">Eliminar quincena</button>
+      </div>
+    </div>
+    ${empHtml}
+    <div class="week-foot">
+      <button class="add-emp-btn" data-action="add-q-emp">+ Agregar colaboradora</button>
+    </div>
+  </div>`;
+}
+
+function attachQuincenaHandlers(){
+  document.querySelectorAll('.week[data-qid]').forEach(qEl=>{
+    const qid = qEl.dataset.qid;
+    const q = quincenas.find(x=>x.id===qid);
+    qEl.querySelector('[data-field="qlabel"]').addEventListener('change', e=>{ q.label = e.target.value; saveWeeks(); });
+    qEl.querySelector('[data-action="rm-quincena"]').addEventListener('click', ()=>removeQuincena(qid));
+    qEl.querySelector('[data-action="add-q-emp"]').addEventListener('click', ()=>addQuincenaEmpleado(qid));
+
+    qEl.querySelectorAll('.quincena-emp[data-eid]').forEach(empEl=>{
+      const eid = empEl.dataset.eid;
+      const emp = q.empleados.find(x=>x.id===eid);
+      empEl.querySelector('[data-field="name"]').addEventListener('change', ev=>{ emp.name = ev.target.value; saveWeeks(); });
+      empEl.querySelector('[data-field="negocio"]').addEventListener('change', ev=>{ emp.negocio = ev.target.value; saveWeeks(); });
+      empEl.querySelector('[data-field="rate"]').addEventListener('change', ev=>{ emp.rate = Number(ev.target.value)||0; updateAndSave(); });
+      empEl.querySelector('[data-extra-ccss]').addEventListener('change', ev=>{ emp.ccssAplica = ev.target.checked; updateAndSave(); });
+      empEl.querySelector('[data-extra-ccss-monto]').addEventListener('change', ev=>{
+        const v = ev.target.value.trim();
+        emp.ccssManual = v==='' ? null : Number(v);
+        updateAndSave();
+      });
+      empEl.querySelector('[data-action="rm-q-emp"]').addEventListener('click', ()=>removeQuincenaEmpleado(qid, eid));
+      empEl.querySelector('[data-action="toggle-q-extras"]').addEventListener('click', ()=>{
+        if(expandedExtras.has(eid)) expandedExtras.delete(eid); else expandedExtras.add(eid);
+        render();
+      });
+      empEl.querySelectorAll('[data-qextra]').forEach(inp=>{
+        inp.addEventListener('change', ev=>{
+          if(!emp.extras) emp.extras = blankQuincenaExtras();
+          emp.extras[ev.target.dataset.qextra] = Number(ev.target.value)||0;
+          updateAndSave();
+        });
+      });
+      empEl.querySelectorAll('table.dias-table tr[data-idx]').forEach(row=>{
+        const idx = Number(row.dataset.idx);
+        row.querySelector('[data-field="dia-label"]').addEventListener('change', ev=>{ emp.dias[idx].label = ev.target.value; saveWeeks(); });
+        row.querySelector('[data-field="dia-horas"]').addEventListener('change', ev=>{
+          emp.dias[idx].horas = Number(ev.target.value)||0;
+          updateAndSave();
+        });
+      });
+    });
+  });
+}
+
+// --- Chronological ordering ---
+// Real calendar month numbers (Ene=1...Dic=12). Labels now carry an explicit
+// year (see the 2025/2026 relabel), so we sort by year first, then month,
+// then day — no more fiscal-year guessing.
+const MONTH_ORDER = {
+  enero:1, ene:1,
+  febrero:2, feb:2,
+  marzo:3, mar:3,
+  abril:4, abr:4,
+  mayo:5,
+  junio:6, jun:6,
+  julio:7, jul:7,
+  agosto:8, ago:8,
+  setiembre:9, septiembre:9, set:9, sep:9, sept:9,
+  octubre:10, oct:10,
+  noviembre:11, nov:11,
+  diciembre:12, dic:12,
+};
+function stripAccents(s){ return s.normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+let yearRef = null; // {y, m}: el periodo más reciente que sí trae año escrito
+function parseDateTokens(label){
+  const t = normTxt(label);
+  const tokens = [];
+  // "14 Set", "14 de septiembre", "28 Dic 2025", "5 Oct." …
+  const re = /(\d{1,2})\s*(?:de\s+)?([a-z]+)\.?(?:\s*(?:de\s+)?(20\d{2}))?/g;
+  let m;
+  while((m = re.exec(t)) && tokens.length < 2){
+    const month = MONTH_ORDER[m[2]];
+    if(month===undefined) continue;
+    tokens.push({day:Number(m[1]), month, year: m[3] ? Number(m[3]) : null});
+  }
+  if(!tokens.length){
+    // formato numérico día/mes(/año), ej. 14/9 - 20/9
+    const re2 = /(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{4}|\d{2}))?/g;
+    while((m = re2.exec(t)) && tokens.length < 2){
+      const month = Number(m[2]);
+      if(month<1 || month>12) continue;
+      const y = m[3] ? (m[3].length===2 ? 2000+Number(m[3]) : Number(m[3])) : null;
+      tokens.push({day:Number(m[1]), month, year:y});
+    }
+  }
+  const ya = t.match(/20\d{2}/);
+  return {tokens, anyYear: ya ? Number(ya[0]) : null};
+}
+function computeYearRef(){
+  let best = null;
+  const consider = label=>{
+    const {tokens, anyYear} = parseDateTokens(label);
+    if(!tokens.length) return;
+    const a = tokens[0], b = tokens[1];
+    let y = a.year;
+    if(!y && b && b.year) y = (a.month <= b.month) ? b.year : b.year - 1;
+    if(!y && anyYear) y = anyYear;
+    if(!y) return;
+    const v = y*12 + a.month;
+    if(best===null || v > best.v) best = {v, y, m:a.month};
+  };
+  (weeks||[]).forEach(w=>consider(w.label));
+  (quincenas||[]).forEach(q=>consider(q.label));
+  yearRef = best;
+}
+// Si el rótulo no trae año, se toma el año más cercano al periodo más reciente que sí lo trae.
+function inferYear(month){
+  if(!yearRef) return new Date().getFullYear();
+  const ref = yearRef.y*12 + yearRef.m;
+  let best = yearRef.y, bestD = Infinity;
+  [yearRef.y-1, yearRef.y, yearRef.y+1].forEach(y=>{
+    const d = Math.abs((y*12+month) - ref);
+    if(d < bestD){ bestD = d; best = y; }
+  });
+  return best;
+}
+function parseSortKey(label){
+  const {tokens, anyYear} = parseDateTokens(label);
+  if(!tokens.length) return [9999, 999, 0];
+  const a = tokens[0], b = tokens[1];
+  let year = a.year;
+  if(!year && b && b.year) year = (a.month <= b.month) ? b.year : b.year - 1;
+  if(!year && anyYear) year = anyYear;
+  if(!year) year = inferYear(a.month);
+  return [year, a.month, a.day];
+}
+
+function getSortedTimelineItems(){
+  computeYearRef();
+  const items = [
+    ...weeks.map((w, i) => ({type:'semana', data:w, key: parseSortKey(w.label), idx:i})),
+    ...quincenas.map((q, i) => ({type:'quincena', data:q, key: parseSortKey(q.label), idx: weeks.length + i})),
+  ];
+  items.sort((a,b)=>{
+    if(a.key[0]!==b.key[0]) return a.key[0]-b.key[0];
+    if(a.key[1]!==b.key[1]) return a.key[1]-b.key[1];
+    if(a.key[2]!==b.key[2]) return a.key[2]-b.key[2];
+    return a.idx-b.idx; // stable fallback for unparseable/same-date labels
+  });
+  return items;
+}
+
+// Saldo de vacaciones: 1 día ganado por cada mes con trabajo (más el ajuste del
+// directorio), menos los días tomados (campo "Vacaciones, días" de semanas y
+// quincenas). Se calcula en orden cronológico, así cada fila muestra el saldo
+// al cierre de ese periodo.
+const MESES_CORTOS = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Set','Oct','Nov','Dic'];
+function normTxt(t){ return stripAccents(String(t||'').toLowerCase()); }
+function escHtml(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function scrollToEl(el){ if(el && el.scrollIntoView) el.scrollIntoView({behavior:'smooth', block:'start'}); }
+function fmtFechaCorta(iso){ if(!iso) return '—'; const [y,m,d] = iso.split('-'); return `${d}/${m}/${y}`; }
+function fmtRegistro(key){ if(!key || key[0]===9999 || key[1]===999) return '—'; return `${MESES_CORTOS[key[1]]} ${key[0]}`; }
+function dirEntry(name){ const n = canonicalName(name); return (directorio||[]).find(p=>canonicalName(p.nombre)===n) || null; }
+function colabStatus(name){ const p = dirEntry(name); if(!p) return 'sinficha'; return p.estado==='inactiva' ? 'inactiva' : 'activa'; }
+function recentActiveNames(){
+  const set = new Set();
+  getSortedTimelineItems().slice(-ACTIVE_RECENT_COUNT).forEach(it=>{
+    const isQ = it.type==='quincena';
+    (isQ ? it.data.empleados : it.data.employees).forEach(e=>{
+      const name = (e.name||'').trim(); if(!name) return;
+      const horas = isQ ? quincenaEmpTotals(e).horas : empBreakdown(e).horas;
+      const dias = Number((e.extras||{}).vacacionesDias)||0;
+      if(horas>0 || dias>0) set.add(name);
+    });
+  });
+  return set;
+}
+
+function computeVacaciones(){
+  const adj = {};
+  (directorio||[]).forEach(p=>{ const n = canonicalName(p.nombre); if(n) adj[n] = Number(p.vacAjuste)||0; });
+  const state = {};
+  const snap = new Map();
+  const registro = [];
+  getSortedTimelineItems().forEach(it=>{
+    const isQ = it.type==='quincena';
+    const emps = isQ ? it.data.empleados : it.data.employees;
+    const touched = [];
+    emps.forEach(e=>{
+      const name = (e.name||'').trim();
+      if(!name) return;
+      const ex = e.extras || {};
+      const dias = Number(ex.vacacionesDias)||0;
+      const sg = Number(ex.sinGoceDias)||0;
+      const inc = Number(ex.incapacidadDias)||0;
+      const horas = isQ ? e.dias.reduce((a,d)=>a+(Number(d.horas)||0),0)
+                        : e.hours.reduce((a,b)=>a+(Number(b)||0),0);
+      if(!state[name]) state[name] = {meses:new Set(), tomadas:0, sinGoce:0, incap:0, primero:null, ultimo:null};
+      const st = state[name];
+      if((horas>0 || dias>0) && it.key[0]!==9999 && it.key[1]!==999){
+        st.meses.add(it.key[0]+'-'+it.key[1]);
+        if(!st.primero) st.primero = it.key;
+        st.ultimo = it.key;
+      }
+      st.tomadas += dias;
+      st.sinGoce += sg;
+      st.incap += inc;
+      if(dias>0 || sg>0 || inc>0) registro.push({name, label: it.data.label, negocio: e.negocio||'', dias, sinGoce: sg, incap: inc, tipo: it.type});
+      touched.push({e, name});
+    });
+    touched.forEach(({e, name})=>{
+      const st = state[name];
+      const ganadas = st.meses.size + (adj[name]||0);
+      snap.set(e.id, {ganadas, tomadas: st.tomadas, sinGoce: st.sinGoce, incap: st.incap, disp: ganadas - st.tomadas});
+    });
+  });
+  const perName = {};
+  Object.keys(state).forEach(n=>{
+    const st = state[n];
+    const ganadas = st.meses.size + (adj[n]||0);
+    perName[n] = {meses: st.meses.size, ajuste: adj[n]||0, ganadas, tomadas: st.tomadas, sinGoce: st.sinGoce, incap: st.incap, disp: ganadas - st.tomadas, primero: st.primero, ultimo: st.ultimo};
+  });
+  return {snap, perName, registro};
+}
+
+function vacBadgeHtml(id){
+  const v = vacData && vacData.snap.get(id);
+  if(!v) return '';
+  const tip = `Ganadas ${fmtDias(v.ganadas)} · tomadas ${fmtDias(v.tomadas)}` + (v.sinGoce ? ` · sin goce ${fmtDias(v.sinGoce)}` : '') + (v.incap ? ` · incapacidad ${fmtDias(v.incap)}` : '') + ' (al cierre de este periodo)';
+  return `<div class="vac-badge ${v.disp<0?'neg':''}" title="${tip}">Vac: <b>${fmtDias(v.disp)}</b> disp. · ${fmtDias(v.tomadas)} tom.${v.sinGoce?` · ${fmtDias(v.sinGoce)} s/goce`:''}${v.incap?` · ${fmtDias(v.incap)} incap.`:''}</div>`;
+}
+
+let searchTerm = '';
+let currentTokens = [];
+const monthState = new Map();   // mes -> true si está colapsado
+let lastMonthKeys = [];
+
+function monthKeyOf(key){ return (key[0]===9999 || key[1]===999) ? 'sin-fecha' : key[0]+'-'+String(key[1]).padStart(2,'0'); }
+function empKeywords(e){
+  const ex = e.extras || {};
+  let k = (e.name||'') + ' ' + (e.negocio||'');
+  if(Number(ex.vacacionesDias)>0) k += ' vacaciones';
+  if(Number(ex.sinGoceDias)>0) k += ' sin goce';
+  if(Number(ex.incapacidadDias)>0) k += ' incapacidad ccss';
+  return k;
+}
+function periodHaystack(it){
+  const emps = it.type==='quincena' ? it.data.empleados : it.data.employees;
+  const parts = [it.data.label || ''];
+  emps.forEach(e=>parts.push(empKeywords(e)));
+  const [y, m] = it.key;
+  if(y!==9999 && m!==999){ parts.push(MESES_NOMBRES[m]+' '+y); if(m===9) parts.push('septiembre'); }
+  return normTxt(parts.join(' '));
+}
+function periodPago(it){
+  if(it.type==='quincena') return it.data.empleados.reduce((a,e)=>a+(quincenaEmpTotals(e).pago||0),0);
+  return weekTotals(it.data).pago;
+}
+function rowHit(e){
+  if(!currentTokens.length) return false;
+  const h = normTxt(empKeywords(e));
+  return currentTokens.some(t=>h.includes(t));
+}
+function clearSearch(){
+  searchTerm = '';
+  const i = document.getElementById('searchInput'); if(i) i.value = '';
+  const b = document.getElementById('searchClear'); if(b) b.hidden = true;
+}
+function goToMonth(key){
+  monthState.set(key, false);
+  renderTimeline();
+  scrollToEl(document.getElementById('mes-'+key));
+}
+function goToLatest(){
+  clearSearch();
+  renderTimeline();
+  const keys = lastMonthKeys.filter(k=>k!=='sin-fecha');
+  const k = keys[keys.length-1];
+  if(k) monthState.set(k, false);
+  renderTimeline();
+  const cards = document.querySelectorAll(k ? `#mes-${k} .week` : '#timelineContainer .week');
+  scrollToEl(cards[cards.length-1]);
+}
+
+function renderTimeline(){
+  vacData = computeVacaciones();
+  currentTokens = normTxt(searchTerm).split(/\s+/).filter(Boolean);
+  const searching = currentTokens.length > 0;
+  const container = document.getElementById('timelineContainer');
+  const all = getSortedTimelineItems();
+  let latestKey = null;
+  all.forEach(it=>{ const k = monthKeyOf(it.key); if(k!=='sin-fecha') latestKey = k; });
+  const items = searching ? all.filter(it=>{ const h = periodHaystack(it); return currentTokens.every(t=>h.includes(t)); }) : all;
+
+  const groups = [], gi = new Map();
+  items.forEach(it=>{
+    const k = monthKeyOf(it.key);
+    if(!gi.has(k)){ gi.set(k, groups.length); groups.push({key:k, y:it.key[0], m:it.key[1], items:[]}); }
+    groups[gi.get(k)].items.push(it);
+  });
+  // por defecto solo el mes más reciente queda abierto (y los periodos sin fecha)
+  groups.forEach(g=>{ if(!monthState.has(g.key)) monthState.set(g.key, g.key!==latestKey && g.key!=='sin-fecha'); });
+  lastMonthKeys = groups.map(g=>g.key);
+
+  container.innerHTML = groups.map(g=>{
+    const collapsed = !searching && monthState.get(g.key);
+    const titulo = g.key==='sin-fecha' ? 'Sin fecha en el rótulo' : `${MESES_NOMBRES[g.m]} ${g.y}`;
+    const total = g.items.reduce((a,it)=>a+periodPago(it),0);
+    const cards = g.items.map(it=> it.type==='semana' ? weekCardHtml(it.data) : quincenaCardHtml(it.data)).join('');
+    const nota = g.key==='sin-fecha'
+      ? `<div class="empty-state" style="padding:6px 4px 12px; text-align:left; font-size:12px;">No se pudo leer la fecha de: ${g.items.map(it=>'«'+escHtml(it.data.label||'(vacío)')+'»').join(', ')}. Escribí el rótulo como «Semana 14 Set 2026 - 20 Set 2026».</div>`
+      : '';
+    return `<section class="month-block" id="mes-${g.key}" data-month="${g.key}">
+      <div class="month-head ${collapsed?'collapsed':''}" data-month="${g.key}" role="button" tabindex="0">
+        <span class="chev">${collapsed?'▸':'▾'}</span>
+        <span class="month-title">${titulo}</span>
+        <span class="month-meta">${g.items.length} periodo${g.items.length===1?'':'s'} · ${fmtCRC(total)}</span>
+      </div>
+      <div class="month-body" ${collapsed?'hidden':''}>${nota}${cards}</div>
+    </section>`;
+  }).join('') || `<div class="empty-state">No hay periodos que coincidan con «${escHtml(searchTerm)}».</div>`;
+
+  document.getElementById('monthChips').innerHTML = groups.map(g=>{
+    const label = g.key==='sin-fecha' ? 'Sin fecha' : `${MESES_CORTOS[g.m]} ${String(g.y).slice(2)}`;
+    return `<button type="button" class="chip" data-month="${g.key}">${label}</button>`;
+  }).join('');
+  document.getElementById('searchCount').textContent = searching ? `${items.length} de ${all.length} periodos coinciden` : '';
+
+  attachHandlers();
+  attachQuincenaHandlers();
+  container.querySelectorAll('.month-head').forEach(h=>{
+    const toggle = ()=>{ if(searching) return; const k = h.dataset.month; monthState.set(k, !monthState.get(k)); renderTimeline(); };
+    h.addEventListener('click', toggle);
+    h.addEventListener('keydown', ev=>{ if(ev.key==='Enter' || ev.key===' '){ ev.preventDefault(); toggle(); } });
+  });
+  document.querySelectorAll('#monthChips .chip').forEach(c=>c.addEventListener('click', ()=>goToMonth(c.dataset.month)));
+  const afterAdd = ()=>setTimeout(()=>scrollToEl(document.querySelector('#mes-sin-fecha .week:last-child')), 60);
+  document.getElementById('addWeekBtn').onclick = ()=>{ clearSearch(); addWeek(); afterAdd(); };
+  document.getElementById('addQuincenaBtn').onclick = ()=>{ clearSearch(); addQuincena(); afterAdd(); };
+}
+
+function initToolbar(){
+  const input = document.getElementById('searchInput');
+  const clearBtn = document.getElementById('searchClear');
+  input.addEventListener('input', ()=>{ searchTerm = input.value; clearBtn.hidden = !input.value; renderTimeline(); });
+  clearBtn.addEventListener('click', ()=>{ clearSearch(); renderTimeline(); input.focus(); });
+  document.getElementById('collapseAllBtn').addEventListener('click', ()=>{ lastMonthKeys.forEach(k=>monthState.set(k,true)); renderTimeline(); });
+  document.getElementById('expandAllBtn').addEventListener('click', ()=>{ lastMonthKeys.forEach(k=>monthState.set(k,false)); renderTimeline(); });
+  document.getElementById('jumpSelect').addEventListener('change', ev=>{
+    const v = ev.target.value; ev.target.value = '';
+    if(v==='latest'){ goToLatest(); return; }
+    const ids = {directorio:'directorioSection', timeline:'timelineHead', negocio:'resumenNegocio', colab:'resumenColab', pagos:'pagosColab', vac:'vacAguinaldo'};
+    if(ids[v]) scrollToEl(document.getElementById(ids[v]));
+  });
+  document.addEventListener('keydown', ev=>{
+    const tag = ((document.activeElement||{}).tagName||'');
+    if(ev.key==='/' && !/INPUT|TEXTAREA|SELECT/.test(tag)){ ev.preventDefault(); input.focus(); }
+    if(ev.key==='Escape' && document.activeElement===input && input.value){ clearSearch(); renderTimeline(); }
+  });
+}
+
+function renderEmpSummary(){
+  const map = {};
+  weeks.forEach(w=>{
+    w.employees.forEach(e=>{
+      const name = (e.name||'').trim();
+      if(!name) return;
+      if(!map[name]) map[name] = {semanas:0, horas:0, pago:0};
+      const b = empBreakdown(e);
+      map[name].semanas += 1;
+      map[name].horas += b.horas;
+      if(b.hasAnyData) map[name].pago += b.neto;
+    });
+  });
+  (quincenas||[]).forEach(q=>{
+    q.empleados.forEach(e=>{
+      const name = (e.name||'').trim();
+      if(!name) return;
+      if(!map[name]) map[name] = {semanas:0, horas:0, pago:0};
+      const t = quincenaEmpTotals(e);
+      map[name].semanas += 1; // counts as one pay period
+      map[name].horas += t.horas;
+      if(t.pago!==null) map[name].pago += t.pago;
+    });
+  });
+  const body = document.getElementById('empSummaryBody');
+  const grupos = [['activa','Activas'],['inactiva','Ya no trabajan con nosotros'],['sinficha','Sin ficha en el directorio']];
+  const porGrupo = {activa:[], inactiva:[], sinficha:[]};
+  Object.keys(map).sort((a,b)=>a.localeCompare(b,'es')).forEach(n=>porGrupo[colabStatus(n)].push(n));
+  const rowHtml = n=>{
+    const d = map[n];
+    return `<tr>
+      <td class="emp">${n}</td>
+      <td>${d.semanas}</td>
+      <td class="total-horas">${d.horas}</td>
+      <td class="pago">${fmtCRC(d.pago)}</td>
+    </tr>`;
+  };
+  body.innerHTML = grupos.filter(([k])=>porGrupo[k].length).map(([k,t])=>
+    `<tr class="group-head"><td colspan="4"><span class="group-name">${t}</span><span class="group-sub">${porGrupo[k].length}</span></td></tr>` +
+    porGrupo[k].map(rowHtml).join('')
+  ).join('') || `<tr><td colspan="4" style="text-align:center;color:var(--ink-soft);padding:14px;">Sin colaboradoras registradas todavía</td></tr>`;
+}
+
+function groupByNegocio(employees){
+  const order = [];
+  const map = {};
+  employees.forEach(e=>{
+    const key = (e.negocio||'').trim() || SIN_NEGOCIO;
+    if(!map[key]){ map[key] = []; order.push(key); }
+    map[key].push(e);
+  });
+  // keep named negocios first (in NEGOCIOS order, then any others alphabetically), "Sin negocio" last
+  order.sort((a,b)=>{
+    if(a===SIN_NEGOCIO) return 1;
+    if(b===SIN_NEGOCIO) return -1;
+    return a.localeCompare(b,'es');
+  });
+  return order.map(key=>({negocio:key, items:map[key]}));
+}
+
+function empRowHtml(e){
+  const b = empBreakdown(e);
+  const flagged = b.rateNeeded;
+  const pago = b.hasAnyData ? b.neto : null;
+  const ex = e.extras || blankExtras();
+  const hasExtras = MANUAL_EXTRA_FIELDS.some(f=>Number(ex[f.key])>0) || b.ccssAplica;
+  const manualFieldsHtml = MANUAL_EXTRA_FIELDS.map(f=>`
+    <div class="extra-field">
+      <label>${f.label}</label>
+      <input type="number" min="0" step="${(f.key==='vacacionesDias'||f.key==='sinGoceDias'||f.key==='incapacidadDias')?'0.5':'1'}" value="${ex[f.key]||0}" data-extra="${f.key}">
+    </div>`).join('') + `
+    <div class="extra-field extra-field-ccss">
+      <label>Rebajo CCSS</label>
+      <label class="ccss-checkbox">
+        <input type="checkbox" data-extra-ccss="1" ${b.ccssAplica?'checked':''}>
+        Aplicar a esta persona
+      </label>
+      <div class="ccss-manual-row">
+        <input type="number" min="0" step="1" placeholder="${Math.round(Math.abs(b.ccssAuto))}"
+          value="${b.ccssManual!==null ? Math.abs(b.ccssManual) : ''}" data-extra-ccss-monto="1">
+        <span>₡ (vacío = automático ${(CCSS_RATE*100).toFixed(2)}%)</span>
+      </div>
+    </div>`;
+  const computedHtml = `
+    <div class="extra-computed">
+      <div><span>Vacaciones (₡)</span><b>${fmtCRC(b.vacacionesMonto)}</b></div>
+      <div><span>Total con extras</span><b>${fmtCRC(b.totalConExtras)}</b></div>
+      <div class="ccss-line"><span>CCSS ${b.ccssAplica?(b.ccssManual!==null?'(manual)':`(−${(CCSS_RATE*100).toFixed(2)}%)`):'(no aplica)'}</span><b>${fmtCRC(b.ccss)}</b></div>
+      <div class="neto-line"><span>Neto a pagar</span><b>${fmtCRC(b.neto)}</b></div>
+    </div>`;
+  return `<tr class="${flagged?'flag':''} ${rowHit(e)?'search-hit':''}" data-eid="${e.id}">
+    <td class="emp"><input class="name" value="${e.name.replace(/"/g,'&quot;')}" placeholder="Nombre" data-field="name">${vacBadgeHtml(e.id)}</td>
+    <td class="negocio-cell">
+      <input class="negocio" list="negocios-list" value="${(e.negocio||'').replace(/"/g,'&quot;')}" placeholder="Negocio" data-field="negocio">
+    </td>
+    ${e.hours.map((v,i)=>`<td><input class="hours" type="number" min="0" step="0.5" value="${v}" data-field="hours" data-day="${i}"></td>`).join('')}
+    <td class="total-horas">${b.horas}</td>
+    <td><input class="rate" type="number" min="0" step="1" value="${e.rate}" data-field="rate"></td>
+    <td class="${pago===null?'pago empty':'pago'}">${pago===null? (b.horas>0?'sin tarifa':'—') : fmtCRC(pago)}</td>
+    <td class="row-actions">
+      <button class="extras-toggle ${hasExtras?'has-extras':''}" data-action="toggle-extras" title="Feriados, vacaciones, bono, CCSS">${hasExtras?'●':'+'}</button>
+      <button class="rm-emp" data-action="rm-emp" title="Eliminar colaboradora">×</button>
+    </td>
+  </tr>
+  <tr class="extras-row" data-extras-for="${e.id}" ${expandedExtras.has(e.id)?'':'hidden'}>
+    <td colspan="13">
+      <div class="extras-grid">${manualFieldsHtml}</div>
+      ${computedHtml}
+    </td>
+  </tr>`;
+}
+
+function groupHeaderHtml(wid, negocio, items){
+  let horas=0, pago=0;
+  items.forEach(e=>{
+    const b = empBreakdown(e);
+    horas += b.horas;
+    if(b.hasAnyData) pago += b.neto;
+  });
+  return `<tr class="group-head" data-negocio-add="${negocio.replace(/"/g,'&quot;')}" data-wid="${wid}">
+    <td colspan="13">
+      <span class="group-name">${negocio}</span>
+      <span class="group-sub">${horas}h · ${fmtCRC(pago)}</span>
+      <button class="group-add-btn" data-action="add-emp-negocio" data-negocio="${negocio===SIN_NEGOCIO?'':negocio.replace(/"/g,'&quot;')}">+ colaboradora</button>
+    </td>
+  </tr>`;
+}
+
+function weekCardHtml(w){
+  const t = weekTotals(w);
+  const groups = groupByNegocio(w.employees);
+  const rows = groups.map(g=>
+    groupHeaderHtml(w.id, g.negocio, g.items) + g.items.map(empRowHtml).join('')
+  ).join('');
+  return `<div class="week" data-wid="${w.id}">
+      <div class="week-head">
+        <input class="label" value="${w.label.replace(/"/g,'&quot;')}" placeholder="Semana (ej. Semana 24 Feb - 2 Marzo)" data-field="weeklabel">
+        <div class="week-actions">
+          <span class="period-tag">Semanal</span>${parseSortKey(w.label)[0]===9999?'<span class="period-tag warn" title="La herramienta no pudo leer una fecha en este rótulo">sin fecha legible</span>':''}
+          <button class="icon-btn" data-action="rm-week">Eliminar semana</button>
+        </div>
+      </div>
+      <table>
+        <thead><tr>
+          <th class="emp">Colaboradora</th>
+          <th>Negocio</th>
+          ${DAY_LABELS.map(d=>`<th>${d}</th>`).join('')}
+          <th>Total h.</th><th>₡/hora</th><th>Pago</th><th></th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr>
+          <td class="lbl" colspan="9">Total semana</td>
+          <td></td><td></td>
+          <td>${fmtCRC(t.pago)}</td><td></td>
+        </tr></tfoot>
+      </table>
+      <div class="week-foot">
+        <button class="add-emp-btn" data-action="add-emp">+ Agregar colaboradora</button>
+        ${t.hasEmpty ? '<span class="note">Hay horas sin tarifa asignada</span>' : ''}
+      </div>
+    </div>`;
+}
+
+function render(){
+  renderSummaryBar();
+  renderDirectorio();
+  renderTimeline();
+  renderEmpSummary();
+  renderNegocioSummary();
+  renderAguinaldoVacaciones();
+  renderColabResumen();
+}
+
+function attachHandlers(){
+
+  document.getElementById('addWeekBtn').onclick = addWeek;
+
+  document.querySelectorAll('.week[data-wid]').forEach(weekEl=>{
+    const wid = weekEl.dataset.wid;
+    const w = weeks.find(x=>x.id===wid);
+
+    weekEl.querySelector('[data-field="weeklabel"]').addEventListener('change', e=>{
+      w.label = e.target.value; updateAndSave();
+    });
+    weekEl.querySelector('[data-action="rm-week"]').addEventListener('click', ()=>removeWeek(wid));
+    weekEl.querySelector('[data-action="add-emp"]').addEventListener('click', ()=>addEmployee(wid));
+
+    weekEl.querySelectorAll('[data-action="add-emp-negocio"]').forEach(btn=>{
+      btn.addEventListener('click', ()=>addEmployee(wid, btn.dataset.negocio));
+    });
+
+    weekEl.querySelectorAll('tbody tr[data-eid]').forEach(row=>{
+      const eid = row.dataset.eid;
+      const emp = w.employees.find(x=>x.id===eid);
+      row.querySelector('[data-field="name"]').addEventListener('change', e=>{ emp.name = e.target.value; updateAndSave(); });
+      row.querySelector('[data-field="negocio"]').addEventListener('change', e=>{ emp.negocio = e.target.value; updateAndSave(); });
+      row.querySelector('[data-field="rate"]').addEventListener('change', e=>{ emp.rate = Number(e.target.value)||0; updateAndSave(); });
+      row.querySelectorAll('[data-field="hours"]').forEach(inp=>{
+        inp.addEventListener('change', e=>{
+          const day = Number(e.target.dataset.day);
+          emp.hours[day] = Number(e.target.value)||0;
+          updateAndSave();
+        });
+      });
+      row.querySelector('[data-action="rm-emp"]').addEventListener('click', ()=>removeEmployee(wid, eid));
+
+      row.querySelector('[data-action="toggle-extras"]').addEventListener('click', ()=>{
+        if(expandedExtras.has(eid)) expandedExtras.delete(eid); else expandedExtras.add(eid);
+        render();
+      });
+    });
+
+    weekEl.querySelectorAll('.extras-row[data-extras-for]').forEach(exRow=>{
+      const eid = exRow.dataset.extrasFor;
+      const emp = w.employees.find(x=>x.id===eid);
+      if(!emp) return;
+      exRow.querySelectorAll('[data-extra]').forEach(inp=>{
+        inp.addEventListener('change', e=>{
+          if(!emp.extras) emp.extras = blankExtras();
+          emp.extras[e.target.dataset.extra] = Number(e.target.value)||0;
+          updateAndSave();
+        });
+      });
+      const ccssBox = exRow.querySelector('[data-extra-ccss]');
+      if(ccssBox){
+        ccssBox.addEventListener('change', e=>{
+          if(!emp.extras) emp.extras = blankExtras();
+          emp.extras.ccssAplica = e.target.checked;
+          updateAndSave();
+        });
+      }
+      const ccssMonto = exRow.querySelector('[data-extra-ccss-monto]');
+      if(ccssMonto){
+        ccssMonto.addEventListener('change', e=>{
+          if(!emp.extras) emp.extras = blankExtras();
+          const v = e.target.value.trim();
+          emp.extras.ccssManual = v==='' ? null : Number(v);
+          updateAndSave();
+        });
+      }
+    });
+  });
+}
+
+function renderNegocioSummary(){
+  const map = {};
+  const order = [];
+  weeks.forEach(w=>{
+    w.employees.forEach(e=>{
+      const key = (e.negocio||'').trim() || SIN_NEGOCIO;
+      if(!map[key]){ map[key] = {horas:0, pago:0, personas:new Set()}; order.push(key); }
+      const b = empBreakdown(e);
+      map[key].horas += b.horas;
+      if(b.hasAnyData) map[key].pago += b.neto;
+      if((e.name||'').trim()) map[key].personas.add(e.name.trim());
+    });
+  });
+  (quincenas||[]).forEach(q=>{
+    q.empleados.forEach(e=>{
+      const key = (e.negocio||'').trim() || SIN_NEGOCIO;
+      if(!map[key]){ map[key] = {horas:0, pago:0, personas:new Set()}; order.push(key); }
+      const t = quincenaEmpTotals(e);
+      map[key].horas += t.horas;
+      if(t.pago!==null) map[key].pago += t.pago;
+      if((e.name||'').trim()) map[key].personas.add(e.name.trim());
+    });
+  });
+  order.sort((a,b)=>{
+    if(a===SIN_NEGOCIO) return 1;
+    if(b===SIN_NEGOCIO) return -1;
+    return a.localeCompare(b,'es');
+  });
+  const body = document.getElementById('negocioSummaryBody');
+  body.innerHTML = order.map(k=>{
+    const d = map[k];
+    return `<tr>
+      <td class="emp">${k}</td>
+      <td>${d.personas.size}</td>
+      <td class="total-horas">${d.horas}</td>
+      <td class="pago">${fmtCRC(d.pago)}</td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="4" style="text-align:center;color:var(--ink-soft);padding:14px;">Sin datos todavía</td></tr>`;
+}
+
+// --- Vacaciones y Aguinaldo ---
+// Periodo de aguinaldo en Costa Rica: 1 diciembre - 30 noviembre.
+// Toma el año del diciembre más antiguo que haya en los datos como inicio del ciclo actual.
+function aguinaldoPeriodo(){
+  computeYearRef();
+  let minDecYear = null;
+  weeks.forEach(w=>{
+    const k = parseSortKey(w.label);
+    if(k[1]===12 && (minDecYear===null || k[0]<minDecYear)) minDecYear = k[0];
+  });
+  if(minDecYear===null){
+    const now = new Date();
+    minDecYear = now.getMonth()===11 ? now.getFullYear() : now.getFullYear()-1;
+  }
+  return {startYear: minDecYear, startMonth:12, endYear: minDecYear+1, endMonth:11};
+}
+function inAguinaldoPeriodo(year, month, periodo){
+  if(year===periodo.startYear && month===12) return true;
+  if(year===periodo.endYear && month<=11) return true;
+  return false;
+}
+
+const MESES_NOMBRES = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Setiembre','Octubre','Noviembre','Diciembre'];
+let colabSeleccionada = '';
+
+function renderColabResumen(){
+  const select = document.getElementById('colabSelect');
+  const names = new Set();
+  weeks.forEach(w=>w.employees.forEach(e=>{ if((e.name||'').trim()) names.add(e.name.trim()); }));
+  (quincenas||[]).forEach(q=>q.empleados.forEach(e=>{ if((e.name||'').trim()) names.add(e.name.trim()); }));
+  const list = [...names].sort((a,b)=>a.localeCompare(b,'es'));
+  if(!colabSeleccionada || !names.has(colabSeleccionada)) colabSeleccionada = list.find(n=>colabStatus(n)==='activa') || list[0] || '';
+  const grp = {activa:[], inactiva:[], sinficha:[]};
+  list.forEach(n=>grp[colabStatus(n)].push(n));
+  const opt = n=>`<option value="${n.replace(/"/g,'&quot;')}" ${n===colabSeleccionada?'selected':''}>${n}</option>`;
+  select.innerHTML = [['activa','Activas'],['inactiva','Ya no trabajan con nosotros'],['sinficha','Sin ficha en el directorio']]
+    .filter(([k])=>grp[k].length).map(([k,t])=>`<optgroup label="${t}">${grp[k].map(opt).join('')}</optgroup>`).join('');
+  select.onchange = ev => { colabSeleccionada = ev.target.value; renderColabResumen(); };
+
+  const rows = [];
+  getSortedTimelineItems().forEach(it=>{
+    const emps = it.type==='quincena' ? it.data.empleados : it.data.employees;
+    emps.forEach(e=>{
+      if((e.name||'').trim()!==colabSeleccionada) return;
+      let horas, bruto, ccss, neto, pendiente;
+      if(it.type==='quincena'){
+        const t = quincenaEmpTotals(e);
+        horas = t.horas; bruto = t.bruto||0; ccss = t.ccss||0; neto = t.pago||0;
+        pendiente = t.bruto===null && t.horas>0;
+      } else {
+        const b = empBreakdown(e);
+        if(!b.hasAnyData) return;
+        horas = b.horas; bruto = b.totalConExtras; ccss = b.ccss; neto = b.neto;
+        pendiente = b.rateNeeded;
+      }
+      if(horas<=0 && bruto===0) return;
+      rows.push({label: it.data.label, tipo: it.type, negocio: e.negocio||'', horas, bruto, ccss, neto, pendiente, key: it.key});
+    });
+  });
+
+  const semBody = document.getElementById('colabSemanaBody');
+  const tot = {horas:0, bruto:0, ccss:0, neto:0};
+  semBody.innerHTML = rows.map(r=>{
+    tot.horas+=r.horas; tot.bruto+=r.bruto; tot.ccss+=r.ccss; tot.neto+=r.neto;
+    return `<tr class="${r.pendiente?'flag':''}">
+      <td class="emp">${r.label}${r.tipo==='quincena'?' <span class="period-tag quincenal">Quincenal</span>':''}</td>
+      <td>${r.negocio||'—'}</td>
+      <td class="total-horas">${r.horas}</td>
+      <td class="pago">${r.pendiente?'<span class="pendiente">sin tarifa</span>':fmtCRC(r.bruto)}</td>
+      <td class="pago">${r.ccss?fmtCRC(r.ccss):'—'}</td>
+      <td class="pago">${r.pendiente?'<span class="pendiente">pendiente</span>':fmtCRC(r.neto)}</td>
+    </tr>`;
+  }).join('') + (rows.length ? `<tr class="total-row"><td class="emp" colspan="2">Total</td><td>${tot.horas}</td><td>${fmtCRC(tot.bruto)}</td><td>${tot.ccss?fmtCRC(tot.ccss):'—'}</td><td>${fmtCRC(tot.neto)}</td></tr>` : '')
+    || `<tr><td colspan="6" style="text-align:center;color:var(--ink-soft);padding:14px;">Sin pagos registrados para esta colaboradora</td></tr>`;
+
+  // por mes (según el mes en que empieza cada periodo)
+  const months = new Map();
+  rows.forEach(r=>{
+    const [y, m] = r.key;
+    const k = (y===9999||m===999) ? 'sin-fecha' : y+'-'+String(m).padStart(2,'0');
+    const label = k==='sin-fecha' ? 'Sin fecha en el rótulo' : `${MESES_NOMBRES[m]} ${y}`;
+    if(!months.has(k)) months.set(k, {label, n:0, horas:0, bruto:0, ccss:0, neto:0, pendH:0});
+    const o = months.get(k);
+    o.n++; o.horas+=r.horas; o.bruto+=r.bruto; o.ccss+=r.ccss; o.neto+=r.neto;
+    if(r.pendiente) o.pendH += r.horas;
+  });
+  const mesBody = document.getElementById('colabMesBody');
+  mesBody.innerHTML = [...months.values()].map(o=>`<tr>
+      <td class="emp">${o.label}</td>
+      <td>${o.n}</td>
+      <td class="total-horas">${o.horas}${o.pendH?` <span class="pendiente">(${o.pendH}h sin tarifa)</span>`:''}</td>
+      <td class="pago">${fmtCRC(o.bruto)}</td>
+      <td class="pago">${o.ccss?fmtCRC(o.ccss):'—'}</td>
+      <td class="pago">${fmtCRC(o.neto)}</td>
+    </tr>`).join('') + (rows.length ? `<tr class="total-row"><td class="emp">Total</td><td>${rows.length}</td><td>${tot.horas}</td><td>${fmtCRC(tot.bruto)}</td><td>${tot.ccss?fmtCRC(tot.ccss):'—'}</td><td>${fmtCRC(tot.neto)}</td></tr>` : '')
+    || `<tr><td colspan="6" style="text-align:center;color:var(--ink-soft);padding:14px;">Sin pagos registrados para esta colaboradora</td></tr>`;
+}
+
+const ACTIVE_RECENT_COUNT = 6; // cuántos periodos recientes (en el orden de la línea de tiempo) cuentan como "activa"
+
+function renderAguinaldoVacaciones(){
+  const periodo = aguinaldoPeriodo();
+  document.getElementById('aguinaldoPeriodo').textContent =
+    `Aguinaldo: ${MESES_NOMBRES[periodo.startMonth]} ${periodo.startYear} – ${MESES_NOMBRES[periodo.endMonth]} ${periodo.endYear} (bruto ÷ 12). ` +
+    `Vacaciones: 1 día por mes trabajado, acumulado desde el primer mes con datos, más el ajuste del directorio. ` +
+    `Las listas salen del Directorio (Activas / Ya no trabajan).`;
+
+  const vac = computeVacaciones();
+  const data = {}; // nombre -> {bruto, ultimaTarifa}
+  getSortedTimelineItems().forEach(it=>{
+    const isQ = it.type==='quincena';
+    const employees = isQ ? it.data.empleados : it.data.employees;
+    const enPeriodo = it.key[0]!==9999 && inAguinaldoPeriodo(it.key[0], it.key[1], periodo);
+    employees.forEach(e=>{
+      const name = (e.name||'').trim();
+      if(!name) return;
+      const horas = isQ ? quincenaEmpTotals(e).horas : empBreakdown(e).horas;
+      const dias = Number((e.extras||{}).vacacionesDias)||0;
+      if(horas<=0 && dias<=0) return;
+      if(!data[name]) data[name] = {bruto:0, ultimaTarifa:0};
+      if(Number(e.rate)>0) data[name].ultimaTarifa = Number(e.rate);
+      if(!enPeriodo) return;
+      data[name].bruto += isQ ? (quincenaEmpTotals(e).bruto||0) : empBreakdown(e).totalConExtras;
+    });
+  });
+
+  const rowFor = p=>{
+    const n = canonicalName(p.nombre);
+    const aj = Number(p.vacAjuste)||0;
+    const d = data[n] || {bruto:0, ultimaTarifa:0};
+    const v = vac.perName[n] || {meses:0, ajuste:aj, ganadas:aj, tomadas:0, sinGoce:0, disp:aj};
+    const valorDisp = Math.max(v.disp, 0) * 8 * d.ultimaTarifa;
+    const salida = (p.estado==='inactiva' && p.fechaSalida) ? `<div class="vac-badge">Salida: ${fmtFechaCorta(p.fechaSalida)}</div>` : '';
+    return `<tr>
+      <td class="emp">${n}${salida}</td>
+      <td>${v.meses}</td>
+      <td>${fmtDias(v.ganadas)}${v.ajuste?` <span class="pendiente">(ajuste ${v.ajuste>0?'+':''}${fmtDias(v.ajuste)})</span>`:''}</td>
+      <td>${fmtDias(v.tomadas)}${v.sinGoce?` <span class="pendiente">(+${fmtDias(v.sinGoce)} sin goce)</span>`:''}${v.incap?` <span class="pendiente">(+${fmtDias(v.incap)} incapacidad)</span>`:''}</td>
+      <td class="total-horas ${v.disp<0?'neg':''}">${fmtDias(v.disp)}</td>
+      <td class="pago">${fmtCRC(valorDisp)}</td>
+      <td class="pago">${fmtCRC(d.bruto)}</td>
+      <td class="pago">${fmtCRC(d.bruto / 12)}</td>
+    </tr>`;
+  };
+  const byName = (a,b)=>canonicalName(a.nombre).localeCompare(canonicalName(b.nombre),'es');
+  const list = (directorio||[]).filter(p=>(p.nombre||'').trim());
+  const act = list.filter(p=>p.estado!=='inactiva').sort(byName);
+  const ina = list.filter(p=>p.estado==='inactiva').sort(byName);
+  const empty = t=>`<tr><td colspan="8" style="text-align:center;color:var(--ink-soft);padding:14px;">${t}</td></tr>`;
+  document.getElementById('aguinaldoBody').innerHTML = act.map(rowFor).join('') || empty('Sin colaboradoras activas en el directorio');
+  document.getElementById('aguinaldoInactivasBody').innerHTML = ina.map(rowFor).join('') || empty('Nadie marcada como "Ya no trabaja"');
+
+  document.getElementById('vacRegistroBody').innerHTML = vac.registro.map(r=>`<tr>
+      <td class="emp">${r.name}</td>
+      <td>${r.label}${r.tipo==='quincena'?' <span class="period-tag quincenal">Quincenal</span>':''}</td>
+      <td>${r.negocio||'—'}</td>
+      <td class="total-horas">${r.dias?fmtDias(r.dias):'—'}</td>
+      <td>${r.sinGoce?fmtDias(r.sinGoce):'—'}</td>
+      <td>${r.incap?fmtDias(r.incap):'—'}</td>
+    </tr>`).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--ink-soft);padding:14px;">Todavía no hay vacaciones ni incapacidades registradas. Se anotan con el botón + de cada colaboradora.</td></tr>`;
+}
+
+(async function init(){
+  document.getElementById('negocios-list').innerHTML =
+    NEGOCIOS.map(n=>`<option value="${n}">`).join('');
+  eliminadosFuente = await loadEliminadosFuente();
+  weeks = await loadWeeks();
+  directorio = await loadDirectorio();
+  quincenas = await loadQuincenas();
+  document.getElementById('addDirectorioBtn').addEventListener('click', ()=>{
+    directorio.push({id: uid(), nombre:'', identificacion:'', tipoNomina:'Semanal', vacAjuste:0, estado:'activa', fechaIngreso:'', fechaSalida:''});
+    renderDirectorio();
+    saveWeeks();
+  });
+  document.getElementById('mergeDirectorioBtn').addEventListener('click', mergeDirectorioDuplicates);
+  document.getElementById('importDirectorioBtn').addEventListener('click', importMissingToDirectorio);
+  initToolbar();
+  render();
+  if(window.__mergedCount || window.__patchedCount || window.__weekPatchedCount || window.__negocioBulkCount || window.__cosechasFixCount || window.__sharymAdded || window.__fullNameCount || window.__surnameFixed || window.__deykelAugAdded || window.__gap10Added || window.__gap11Added || window.__deletedSeptNov || window.__relabeledYears || window.__ccssFromAug31){
+    const txt = document.getElementById('saveText');
+    const parts = [];
+    if(window.__mergedCount) parts.push(`${window.__mergedCount} semana(s) nueva(s)`);
+    if(window.__patchedCount) parts.push(`tarifa de Deykel corregida en ${window.__patchedCount} fila(s)`);
+    if(window.__weekPatchedCount) parts.push(`horario del 17-23 Ago cargado`);
+    if(window.__negocioBulkCount) parts.push(`${window.__negocioBulkCount} fila(s) asignadas a Luna Africana`);
+    if(window.__cosechasFixCount) parts.push(`Vicky/Yoseris/Neftali corregidas a Cosechas Puerto Viejo`);
+    if(window.__sharymAdded) parts.push(`Sharym agregada`);
+    if(window.__fullNameCount) parts.push(`${window.__fullNameCount} nombre(s) completados`);
+    if(window.__surnameFixed) parts.push(`apellido de Vicky corregido`);
+    if(window.__deykelAugAdded) parts.push(`horas de Deykel (16-30 Ago) agregadas`);
+    if(window.__gap10Added) parts.push(`semana 31 Ago-6 Set agregada con campos de feriados/bono/CCSS`);
+    if(window.__gap11Added) parts.push(`semana 7-13 Set cargada desde marcas de WhatsApp`);
+    if(window.__deletedSeptNov) parts.push(`${window.__deletedSeptNov} semana(s) de set-nov 2025 eliminadas`);
+    if(window.__relabeledYears) parts.push(`año agregado a ${window.__relabeledYears} semana(s)`);
+    if(window.__ccssFromAug31) parts.push(`CCSS activado desde 31 Ago 2026 en ${window.__ccssFromAug31} fila(s)`);
+    txt.textContent = 'Guardado — ' + parts.join(' y ');
+    await saveWeeks();
+  }
+})();
+</script>
+</body>
+</html>
