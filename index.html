@@ -1017,14 +1017,14 @@ function quincenaEmpTotals(e){
 
 function addQuincena(){
   quincenas.push({id:uid(), sourceId:null, label:'', empleados:[
-    {id:uid(), name:'', negocio:'', rate:0, ccssAplica:false, ccssManual:null, extras:blankQuincenaExtras(), dias: Array.from({length:15}, (_,i)=>({label:`Día ${i+1}`, horas:0}))}
+    {id:uid(), name:'', negocio:'', rate:0, ccssAplica:false, ccssManual:null, extras:blankQuincenaExtras(), dias: Array.from({length:17}, (_,i)=>({label:`Día ${i+1}`, horas:0}))}
   ]});
   updateAndSave();
 }
 
 function addQuincenaEmpleado(qid){
   const q = quincenas.find(x=>x.id===qid);
-  q.empleados.push({id:uid(), name:'', negocio:'', rate:0, ccssAplica:false, ccssManual:null, extras:blankQuincenaExtras(), dias: Array.from({length:15}, (_,i)=>({label:`Día ${i+1}`, horas:0}))});
+  q.empleados.push({id:uid(), name:'', negocio:'', rate:0, ccssAplica:false, ccssManual:null, extras:blankQuincenaExtras(), dias: Array.from({length:17}, (_,i)=>({label:`Día ${i+1}`, horas:0}))});
   updateAndSave();
 }
 
